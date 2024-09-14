@@ -37,28 +37,33 @@ client.once("ready", () => {
 
 // ========== HELP ==========
 
+const emoji = client.emojis.cache.get("1284525093707579544");
+
 const helpEmbed = {
   color: 0x3498db,
   title: "Knex AI help",
   thumbnail: {
-    url: "https://i.imgur.com/iTGgkIw.png",
+    url: "https://i.imgur.com/XhmjN7U.png",
   },
   fields: [
     {
       name: "Commands list",
-      value: "Type / to view a list of slash commands.",
+      value:
+        "<:ListEmoji:1284528208707981453> Type / to view a list of slash commands.",
     },
     {
       name: "Chat with Knex AI",
-      value: "Type /ask to chat with Knex AI.",
+      value: "<:ListEmoji:1284528208707981453> Type /ask to chat with Knex AI.",
     },
     {
       name: "Mathematics",
-      value: "Type /math to solve a math problem.",
+      value:
+        "<:ListEmoji:1284528208707981453> Type /math to solve a math problem.",
     },
     {
       name: "Summarize",
-      value: "Type /summarize to summarize a text.",
+      value:
+        "<:ListEmoji:1284528208707981453> Type /summarize to summarize a text.",
     },
   ],
   footer: {
@@ -93,7 +98,7 @@ client.on("interactionCreate", async (interation) => {
         });
 
         const prompt =
-          "Answer the following question in the same language it was asked:" +
+          "Answer the following question in the same language it was asked, and limit the response to a maximum of 2000 characters." +
           textRecieved;
 
         await interation.reply({ content: "`Thinking`" });
@@ -110,7 +115,7 @@ client.on("interactionCreate", async (interation) => {
           }
         } catch (error) {
           console.error(error);
-          await interation.reply({
+          await interation.editReply({
             content: "`Hmm...something seems to have gone wrong.`",
           });
         }
@@ -134,7 +139,7 @@ client.on("interactionCreate", async (interation) => {
         });
 
         const prompt =
-          "Please summarize the following text in a list of key points:" +
+          "Please summarize the following text in a list of key points, and limit the response to a maximum of 2000 characters." +
           textRecieved;
 
         await interation.reply({ content: "`Thinking`" });
@@ -151,7 +156,7 @@ client.on("interactionCreate", async (interation) => {
           }
         } catch (error) {
           console.error(error);
-          await interation.reply({
+          await interation.editReply({
             content: "`Hmm...something seems to have gone wrong.`",
           });
         }
@@ -176,7 +181,7 @@ client.on("interactionCreate", async (interation) => {
         });
 
         const prompt =
-          "Calculate the following:" +
+          "Calculate the following and limit the response to a maximum of 2000 characters." +
           textRecieved +
           "And Explain it in " +
           language;
@@ -192,10 +197,11 @@ client.on("interactionCreate", async (interation) => {
             fullresponse += chunkText;
 
             await interation.editReply({ content: fullresponse });
+            console.log(fullresponse);
           }
         } catch (error) {
           console.error(error);
-          await interation.reply({
+          await interation.editReply({
             content: "`Hmm...something seems to have gone wrong.`",
           });
         }
