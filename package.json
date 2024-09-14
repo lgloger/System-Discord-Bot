@@ -1,0 +1,22 @@
+{
+  "name": "discord_bots",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@google/generative-ai": "^0.17.2",
+    "@huggingface/inference": "^2.8.0",
+    "axios": "^1.7.7",
+    "discord.js": "^14.16.1",
+    "dotenv": "^16.4.5",
+    "openai": "^4.58.2",
+    "replicate": "^0.32.1",
+    "request": "^2.88.2"
+  },
+  "type": "module"
+}
