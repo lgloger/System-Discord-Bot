@@ -1,4 +1,4 @@
-import { REST, SlashCommandBuilder, Routes } from "discord.js";
+import { REST, SlashCommandBuilder, PermissionFlagsBits, Routes } from "discord.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -52,6 +52,18 @@ const slashRegister = async () => {
                 { name: "English", value: "English" },
                 { name: "Deutsch", value: "German" }
               );
+          }),
+          new SlashCommandBuilder()
+          .setName("test")
+          .setDescription("Test"),
+          new SlashCommandBuilder()
+          .setName("report")
+          .setDescription("Report a problem to the Developers.")
+          .addStringOption((option) => {
+            return option
+              .setName("problem")
+              .setDescription("Describe the problem.")
+              .setRequired(true);
           }),
       ],
     });
