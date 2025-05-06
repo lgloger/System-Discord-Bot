@@ -1,19 +1,14 @@
 import dotenv from "dotenv";
-import request from "request";
-dotenv.config();
-
-// Firebase
-import { db } from "./firebase.js";
-import { collection, addDoc } from "firebase/firestore";
-
 import {
-  Client,
-  Embed,
-  GatewayIntentBits,
-  PresenceUpdateStatus,
+  PermissionsBitField, 
+  Client, 
+  GatewayIntentBits, 
   EmbedBuilder,
-  Guild,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle 
 } from "discord.js";
+dotenv.config();
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -36,17 +31,37 @@ client.once("ready", () => {
 
   client.user.setPresence({
     activities: [{ name: "?help", type: 1 }],
+    // activities: [{ name: "Wartungsarbeiten", type: 1 }],
     status: "online",
   });
 });
 
-// ========== HELP ==========
+// Give new Members a Role
+
+client.on("guildMemberAdd", async (member) => {
+  const role = member.guild.roles.cache.find((role) => role.name === "Members");
+
+  if (role) {
+    try {
+      await member.roles.add(role);
+      console.log(
+        `The role member has been added to the user: ${member.user.tag}`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    console.log("The role members does not exist");
+  }
+});
+
+// Prefix Commands
 
 const helpEmbed = {
-  color: 0x3498db,
-  title: "Knex AI help",
+  color: 0xffffff,
+  title: "Simpli AI help",
   description:
-    "<:report:1284759522212188170> **To report a bug Type /report**",
+    "<:report:1284759522212188170> **To report a bug, contact a moderator.**",
   thumbnail: {
     url: "https://i.imgur.com/XhmjN7U.png",
   },
@@ -54,27 +69,64 @@ const helpEmbed = {
     {
       name: "Commands list",
       value:
-        "<:ListEmoji:1284528208707981453> Type ?help to view a list of slash commands.",
+        "<:ListEmoji:1352740858146983946> Type ?help to view a list of slash commands.",
     },
     {
-      name: "Chat with Knex AI",
-      value: "<:ListEmoji:1284528208707981453> Type /ask to chat with Knex AI.",
+      name: "Chat with Simpli AI",
+      value:
+        "<:ListEmoji:1352740858146983946> Type /ask to chat with Simpli AI.",
     },
     {
       name: "Mathematics",
       value:
-        "<:ListEmoji:1284528208707981453> Type /math to solve a math problem.",
+        "<:ListEmoji:1352740858146983946> Type /math to solve a math problem.",
     },
     {
       name: "Summarize",
       value:
-        "<:ListEmoji:1284528208707981453> Type /summarize to summarize a text.",
+        "<:ListEmoji:1352740858146983946> Type /summarize to summarize a text.",
     },
   ],
   footer: {
-    text: "Knex-AI",
+    text: "Simpli-AI",
   },
 };
+
+client.on("messageCreate", (message) => {
+  if (message.content === "!rules") {
+    if (
+      message.member.permissions.has(PermissionsBitField.Flags.Administrator)
+    ) {
+      var banner = `https://i.imgur.com/0etmHfL.png`;
+      const moderator = "1324718965460570124";
+
+      const rulesEmbed = new EmbedBuilder()
+        .setColor("#2C2F33")
+        .setDescription(
+          "# Rules & Guidelines\n" +
+            "1. **Be wholesome and treat others with kindness and respect.** All kinds of harassment, hate speech and impersonation will not be tolerated.\n" +
+            "2. **No spam.** This includes, but is not limited to, flooding the chat with many messages in a short time, posting excessive amounts of emojis,  posting excessively long messages, posting your message to multiple channels at the same time and tagging members for no reason.\n" +
+            "3. **No NSFW** (not suitable for work) content of any kind, both in the text and voice channels.\n" +
+            "4. **No buying, selling, trading or asking for handouts.** This is not a marketplace.\n" +
+            "5. **Personal conflicts are to be handled privately** and not on public channels on this server.\n \n" +
+            "Seen something violating our rules? Please, say something and tag our <@&" +
+            moderator +
+            ">" +
+            " who will take appropriate action. Avoid tagging moderators without good reasoning."
+        );
+
+      message.channel.send({
+        files: [
+          {
+            attachment: banner,
+            name: "Banner.png",
+          },
+        ],
+      });
+      message.channel.send({ embeds: [rulesEmbed] });
+    }
+  }
+});
 
 client.on("messageCreate", (message) => {
   if (message.content === "?help") {
@@ -91,24 +143,23 @@ client.on("interactionCreate", async (interation) => {
   const user = interation.user.id;
 
   try {
-    // ========== ASK ==========
     if (interation.isCommand()) {
+      // ========== ASK ==========
       if (interation.commandName === "ask") {
-        // Check Cooldown
         if (cooldown.has(user)) {
-          interation.reply({
+          await interation.reply({
             content:
               "<:cooldown:1284614490763038823> `Please wait for the cooldown to end.`",
             ephemeral: true,
           });
         } else {
-          const textRecieved = interation.options.getString("prompt");
+          const textReceived = interation.options.getString("prompt");
 
           const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
           const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "models/gemini-2.0-flash",
             systemInstruction:
-              "You are a AI assistant that helps people find information. Your name is Knex.",
+              "You are a AI assistant that helps people find information. Your name is Simpli AI.",
             generationConfig: {
               maxOutputTokens: 1500,
               temperature: 1,
@@ -116,22 +167,20 @@ client.on("interactionCreate", async (interation) => {
           });
 
           const prompt =
-            "Answer the following question in the same language it was asked, and limit the response to a maximum of 2000 characters." +
-            textRecieved;
+            "Answer the following question and limit the response to a maximum of 2000 characters." +
+            textReceived;
 
-          await interation.reply({
-            content: "<a:loading:1284754853389926480> `Thinking`",
-          });
+          await interation.deferReply();
 
           try {
             const result = await model.generateContentStream(prompt);
-            let fullresponse = "";
+            let fullResponse = "";
 
             for await (const chunk of result.stream) {
               const chunkText = chunk.text();
-              fullresponse += chunkText;
+              fullResponse += chunkText;
 
-              await interation.editReply({ content: fullresponse });
+              await interation.editReply({ content: fullResponse });
             }
           } catch (error) {
             console.error(error);
@@ -142,186 +191,213 @@ client.on("interactionCreate", async (interation) => {
             });
           }
 
-          // add Cooldown
+          // Add Cooldown
           cooldown.add(user);
           setTimeout(() => {
             cooldown.delete(user);
           }, cooldownTime);
         }
       }
-    }
 
-    // ========== SUMMARIZE ==========
-    if (interation.isCommand()) {
-      if (interation.commandName === "summarize") {
+      // ========== IMAGE ==========
+      else if (interation.commandName === "image") {
         if (cooldown.has(user)) {
-          interation.reply({
-            content:
-              "<:cooldown:1284614490763038823> `Please wait for the cooldown to end.`",
-            ephemeral: true,
-          });
-        } else {
-          const textRecieved = interation.options.getString("text");
-
-          const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
-          const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
-            systemInstruction:
-              "You are a AI assistant that helps people summarize Texts. Your name is Knex.",
-            generationConfig: {
-              maxOutputTokens: 1500,
-              temperature: 1,
-            },
-          });
-
-          const prompt =
-            "Please summarize the following text in a list of key points, and limit the response to a maximum of 2000 characters." +
-            textRecieved;
-
-          await interation.reply({ content: "`Thinking`" });
-
-          try {
-            const result = await model.generateContentStream(prompt);
-            let fullresponse = "";
-
-            for await (const chunk of result.stream) {
-              const chunkText = chunk.text();
-              fullresponse += chunkText;
-
-              await interation.editReply({ content: fullresponse });
-            }
-          } catch (error) {
-            console.error(error);
-            await interation.editReply({
-              content:
-                "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-              ephemeral: true,
-            });
-          }
-
-          // add Cooldown
-          cooldown.add(user);
-          setTimeout(() => {
-            cooldown.delete(user);
-          }, cooldownTime);
-        }
-      }
-    }
-
-    // ========== MATH ==========
-    if (interation.isCommand()) {
-      if (interation.commandName === "math") {
-        if (cooldown.has(user)) {
-          interation.reply({
-            content:
-              "<:cooldown:1284614490763038823> `Please wait for the cooldown to end.`",
-            ephemeral: true,
-          });
-        } else {
-          const textRecieved = interation.options.getString("problem");
-          const language = interation.options.getString("language");
-
-          const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
-          const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
-            systemInstruction:
-              "You are a AI assistant that helps people solving math. Your name is Knex.",
-            generationConfig: {
-              maxOutputTokens: 1500,
-              temperature: 1,
-            },
-          });
-
-          const prompt =
-            "Calculate the following and limit the response to a maximum of 2000 characters." +
-            textRecieved +
-            "And Explain it in " +
-            language;
-
-          await interation.reply({ content: "`Thinking`" });
-
-          try {
-            const result = await model.generateContentStream(prompt);
-            let fullresponse = "";
-
-            for await (const chunk of result.stream) {
-              const chunkText = chunk.text();
-              fullresponse += chunkText;
-
-              await interation.editReply({ content: fullresponse });
-            }
-          } catch (error) {
-            console.error(error);
-            await interation.editReply({
-              content:
-                "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-              ephemeral: true,
-            });
-          }
-
-          // add Cooldown
-          cooldown.add(user);
-          setTimeout(() => {
-            cooldown.delete(user);
-          }, cooldownTime);
-        }
-      }
-    }
-
-    // ========== REPORT Problem
-    if (interation.isCommand()) {
-      if (interation.commandName === "report") {
-        const userName = interation.user.username;
-        const userID = interation.user.id;
-        const textRecieved = interation.options.getString("problem");
-
-        try {
-          const docRef = await addDoc(collection(db, "reports"), {
-            userName: userName,
-            userID: userID,
-            report: textRecieved,
-          });
           await interation.reply({
             content:
-              "<:check:1284841812518899815> `Report Sended`",
-            ephemeral: true,
-          })
-        } catch (e) {
-          await interation.reply({
-            content:
-              "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-            ephemeral: true,
-          });
-          console.error("Error adding document: ", e);
-        }
-      }
-    }
-
-    // ========== TEST COMMAND =========
-    if (interation.isCommand()) {
-      if (interation.commandName === "test") {
-        if (cooldown.has(user)) {
-          interation.reply({
-            content:
               "<:cooldown:1284614490763038823> `Please wait for the cooldown to end.`",
             ephemeral: true,
           });
         } else {
-          
-          // add Cooldown
+          const prompt = interation.options.getString("prompt");
+
+          await interation.deferReply();
+
+          try {
+            const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
+            const model = genAI.getGenerativeModel({
+              model: "gemini-2.0-flash-exp-image-generation",
+            });
+
+            const response = await model.generateContent({
+              contents: [
+                {
+                  parts: [
+                    {
+                      text: "Generate a Image with this Description:" + prompt,
+                    },
+                  ],
+                },
+              ],
+              generationConfig: {
+                responseModalities: ["Text", "Image"],
+              },
+            });
+
+            if (
+              !response.response ||
+              !response.response.candidates ||
+              !Array.isArray(response.response.candidates)
+            ) {
+              await interation.reply({
+                content:
+                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+              });
+            }
+
+            const candidate = response.response.candidates[0];
+
+            if (!candidate.content || !candidate.content.parts) {
+              await interation.reply({
+                content:
+                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+              });
+            }
+
+            const parts = candidate.content.parts;
+
+            let imageBuffer;
+            for (const part of parts) {
+              if (part.inlineData && part.inlineData.data) {
+                const base64Image = part.inlineData.data;
+                imageBuffer = Buffer.from(base64Image, "base64");
+                break;
+              }
+            }
+
+            if (imageBuffer) {
+              await interation.editReply({
+                files: [
+                  { attachment: imageBuffer, name: "generated_image.png" },
+                ],
+              });
+            } else {
+              await interation.reply({
+                content:
+                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+              });
+            }
+          } catch (error) {
+            console.error("Error in image generation:", error);
+            if (interation.replied || interation.deferred) {
+              await interation.editReply({
+                content:
+                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+              });
+            } else {
+              await interation.reply({
+                content:
+                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+                ephemeral: true,
+              });
+            }
+          }
+
           cooldown.add(user);
           setTimeout(() => {
             cooldown.delete(user);
           }, cooldownTime);
         }
+      }
+
+      // ========== Blackjack ==========
+      else if (interation.commandName === "blackjack") {
+        let playerHand = [];
+        let botHand = [];
+
+        function drawCard() {
+          const cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11];
+          return cards[Math.floor(Math.random() * cards.length)];
+        }
+
+        function calculateHand(hand) {
+          return hand.reduce((acc, card) => acc + card, 0);
+        }
+
+        // Starte das Spiel
+        playerHand.push(drawCard(), drawCard());
+        botHand.push(drawCard(), drawCard());
+
+        let playerTotal = calculateHand(playerHand);
+        let botTotal = calculateHand(botHand);
+
+        await interation.reply({
+          content: `🃏 **Blackjack gestartet!**\nDeine Karten: ${playerHand.join(
+            ", "
+          )} (**${playerTotal}**)`,
+          components: [
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId("hit")
+                .setLabel("Hit")
+                .setStyle(ButtonStyle.Primary),
+              new ButtonBuilder()
+                .setCustomId("stand")
+                .setLabel("Stand")
+                .setStyle(ButtonStyle.Secondary)
+            ),
+          ],
+        });
+
+        const filter = (btn) => btn.user.id === interation.user.id;
+        const collector = interation.channel.createMessageComponentCollector({
+          filter,
+          time: 60000,
+        });
+
+        collector.on("collect", async (btn) => {
+          if (btn.customId === "hit") {
+            playerHand.push(drawCard());
+            playerTotal = calculateHand(playerHand);
+
+            if (playerTotal > 21) {
+              await btn.update({
+                content: `❌ **BUST!** Deine Karten: ${playerHand.join(
+                  ", "
+                )} (**${playerTotal}**) - Du hast verloren!`,
+                components: [],
+              });
+              collector.stop();
+            } else {
+              await btn.update({
+                content: `Deine Karten: ${playerHand.join(
+                  ", "
+                )} (**${playerTotal}**)`,
+                components: btn.message.components,
+              });
+            }
+          } else if (btn.customId === "stand") {
+            while (botTotal < 17) {
+              botHand.push(drawCard());
+              botTotal = calculateHand(botHand);
+            }
+
+            let result = "";
+            if (botTotal > 21 || playerTotal > botTotal) {
+              result = "🎉 **Glückwunsch! Du hast gewonnen!**";
+            } else if (playerTotal < botTotal) {
+              result = "😞 **Der Bot gewinnt!**";
+            } else {
+              result = "⚖️ **Unentschieden!**";
+            }
+
+            await btn.update({
+              content: `**Spiel beendet!**\nDeine Karten: ${playerHand.join(
+                ", "
+              )} (**${playerTotal}**)\nBot Karten: ${botHand.join(
+                ", "
+              )} (**${botTotal}**)\n\n${result}`,
+              components: [],
+            });
+            collector.stop();
+          }
+        });
       }
     }
   } catch (error) {
     console.error(error);
-    interation.reply({
+    await interation.reply({
       content:
         "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-      ephemeral: true,
     });
   }
 });

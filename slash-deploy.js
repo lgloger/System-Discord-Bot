@@ -1,4 +1,9 @@
-import { REST, SlashCommandBuilder, PermissionFlagsBits, Routes } from "discord.js";
+import {
+  REST,
+  SlashCommandBuilder,
+  PermissionFlagsBits,
+  Routes,
+} from "discord.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -12,59 +17,27 @@ const slashRegister = async () => {
       body: [
         new SlashCommandBuilder()
           .setName("ask")
-          .setDescription("Ask Knex something.")
+          .setDescription("Ask Simpli something.")
           .addStringOption((option) => {
             return option
               .setName("prompt")
               .setDescription("Ask your question.")
               .setRequired(true)
-              .setMinLength(5)
               .setMaxLength(1000);
           }),
         new SlashCommandBuilder()
-          .setName("summarize")
-          .setDescription("Summarize a Text.")
+          .setName("image")
+          .setDescription("Generates an image.")
           .addStringOption((option) => {
             return option
-              .setName("text")
-              .setDescription("Write yoour Text to be summarized.")
+              .setName("prompt")
+              .setDescription("Describe the image you want.")
               .setRequired(true)
-              .setMinLength(5)
-              .setMaxLength(1500);
+              .setMaxLength(5000);
           }),
         new SlashCommandBuilder()
-          .setName("math")
-          .setDescription("Solve a Math Problem.")
-          .addStringOption((option) => {
-            return option
-              .setName("problem")
-              .setDescription("Write your Math Problem.")
-              .setRequired(true)
-              .setMinLength(5)
-              .setMaxLength(500);
-          })
-          .addStringOption((option) => {
-            return option
-              .setName("language")
-              .setDescription("Select your Language.")
-              .setRequired(true)
-              .addChoices(
-                { name: "English", value: "English" },
-                { name: "Deutsch", value: "German" }
-              );
-          }),
-          new SlashCommandBuilder()
-          .setName("test")
-          .setDescription("Test"),
-          new SlashCommandBuilder()
-          .setName("report")
-          .setDescription("Report a problem to the Developers.")
-          .addStringOption((option) => {
-            return option
-              .setName("problem")
-              .setDescription("Describe the problem.")
-              .setRequired(true);
-          }),
+          .setName("blackjack")
+          .setDescription("Play Blackjack with Simpli.")
       ],
     });
   } catch (error) {
