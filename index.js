@@ -6,7 +6,8 @@ import {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle 
+  ButtonStyle,
+  ActivityType
 } from "discord.js";
 dotenv.config();
 
@@ -30,7 +31,7 @@ client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
   client.user.setPresence({
-    activities: [{ name: "?help", type: 1 }],
+    activities: [{ name: "/help", type: ActivityType.Streaming, url: 'https://www.twitch.tv/krabben_luc' }],
     // activities: [{ name: "Wartungsarbeiten", type: 1 }],
     status: "online",
   });
@@ -58,10 +59,10 @@ client.on("guildMemberAdd", async (member) => {
 // Prefix Commands
 
 const helpEmbed = {
-  color: 0xffffff,
+  color: 0x9246FF,
   title: "Simpli AI help",
   description:
-    "<:report:1284759522212188170> **To report a bug, contact a moderator.**",
+    "<:report:1370120401358950581> **To report a bug, contact a moderator.**",
   thumbnail: {
     url: "https://i.imgur.com/XhmjN7U.png",
   },
@@ -69,7 +70,7 @@ const helpEmbed = {
     {
       name: "Commands list",
       value:
-        "<:ListEmoji:1352740858146983946> Type ?help to view a list of slash commands.",
+        "<:ListEmoji:1352740858146983946> Type /help to view a list of slash commands.",
     },
     {
       name: "Chat with Simpli AI",
@@ -77,14 +78,14 @@ const helpEmbed = {
         "<:ListEmoji:1352740858146983946> Type /ask to chat with Simpli AI.",
     },
     {
-      name: "Mathematics",
+      name: "Generate Images",
       value:
-        "<:ListEmoji:1352740858146983946> Type /math to solve a math problem.",
+        "<:ListEmoji:1352740858146983946> Type /image to generate a Image.",
     },
     {
-      name: "Summarize",
+      name: "Blackjack",
       value:
-        "<:ListEmoji:1352740858146983946> Type /summarize to summarize a text.",
+        "<:ListEmoji:1352740858146983946> Type /blackjack to play Blackjack.",
     },
   ],
   footer: {
@@ -128,12 +129,6 @@ client.on("messageCreate", (message) => {
   }
 });
 
-client.on("messageCreate", (message) => {
-  if (message.content === "?help") {
-    message.channel.send({ embeds: [helpEmbed] });
-  }
-});
-
 // ========== COMMAND ==========
 
 const cooldown = new Set();
@@ -144,6 +139,11 @@ client.on("interactionCreate", async (interation) => {
 
   try {
     if (interation.isCommand()) {
+      // ========== HELP ==========
+      if (interation.commandName === "help") {
+        interation.reply({ embeds: [helpEmbed], ephemeral: true, });
+      }
+
       // ========== ASK ==========
       if (interation.commandName === "ask") {
         if (cooldown.has(user)) {
@@ -215,7 +215,7 @@ client.on("interactionCreate", async (interation) => {
           try {
             const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
             const model = genAI.getGenerativeModel({
-              model: "gemini-2.0-flash-exp-image-generation",
+              model: "gemini-2.0-flash-exp",
             });
 
             const response = await model.generateContent({

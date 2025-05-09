@@ -16,6 +16,9 @@ const slashRegister = async () => {
     await rest.put(Routes.applicationCommands(botID), {
       body: [
         new SlashCommandBuilder()
+          .setName("help")
+          .setDescription("Get a List of all Commands."),
+        new SlashCommandBuilder()
           .setName("ask")
           .setDescription("Ask Simpli something.")
           .addStringOption((option) => {
