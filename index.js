@@ -31,14 +31,14 @@ client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
   client.user.setPresence({
-    // activities: [
-    //   {
-    //     name: "/help",
-    //     type: ActivityType.Streaming,
-    //     url: "https://www.twitch.tv/krabben_luc",
-    //   },
-    // ],
-    activities: [{ name: "Wartungsarbeiten", type: 1 }],
+    activities: [
+      {
+        name: "/help",
+        type: ActivityType.Streaming,
+        url: "https://www.twitch.tv/krabben_luc",
+      },
+    ],
+    // activities: [{ name: "Wartungsarbeiten", type: 1 }],
     status: "online",
   });
 });
