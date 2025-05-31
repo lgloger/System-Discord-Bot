@@ -14,10 +14,7 @@ dotenv.config();
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Minecraft Server
-import { 
-  spawn,
-  exec 
-} from "child_process";
+import { spawn, exec } from "child_process";
 
 const client = new Client({
   intents: [
@@ -464,14 +461,49 @@ client.on("interactionCreate", async (interation) => {
         const userId = interation.user.id;
 
         if (userId === "714741152271564861") {
-          spawn('lxterminal', ['-e', 'bash /home/admin/mcserver/start.sh'], {
-            detached: true,
-            stdio: "ignore",
-          }).unref();
-
+          exec(
+            "screen -S minecraft -dm java -Xmx1024M -Xms1024M -jar /home/admin/mcserver/server.jar",
+            (error, stdout, stderr) => {
+              if (error) {
+                console.error(
+                  `Fehler beim Starten des Servers: ${error.message}`
+                );
+                return interation.reply({
+                  content:
+                    "<:error:1284753947680309318> `Error starting Minecraft server.`",
+                  ephemeral: true,
+                });
+              }
+              interation.reply({
+                content:
+                  "<:check:1284841812518899815> `Minecraft server started successfully!`",
+              });
+            }
+          );
+        } else {
           await interation.reply({
             content:
-              "<:check:1284841812518899815> `Minecraft server started successfully!`",
+              "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
+            ephemeral: true,
+          });
+        }
+      } else if (interation.commandName == "stop-mc") {
+        const userId = interation.user.id;
+
+        if (userId === "714741152271564861") {
+          exec("pkill -f 'java.*server\\.jar'", (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Fehler: ${error}`);
+              return interation.reply({
+                content:
+                  "<:error:1284753947680309318> `Error stopping Minecraft server.`",
+                ephemeral: true,
+              });
+            }
+            interation.reply({
+              content:
+                "<:check:1284841812518899815> `Minecraft server stopped successfully!`",
+            });
           });
         } else {
           await interation.reply({
