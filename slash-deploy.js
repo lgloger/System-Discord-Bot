@@ -40,7 +40,13 @@ const slashRegister = async () => {
           }),
         new SlashCommandBuilder()
           .setName("blackjack")
-          .setDescription("Play Blackjack with Simpli.")
+          .setDescription("Play Blackjack with Simpli."),
+        new SlashCommandBuilder()
+          .setName("start-mc")
+          .setDescription("Start the Minecraft server."),
+        new SlashCommandBuilder()
+          .setName("stop-mc")
+          .setDescription("Stop the Minecraft server."),
       ],
     });
   } catch (error) {

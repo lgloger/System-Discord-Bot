@@ -31,14 +31,14 @@ client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
   client.user.setPresence({
-    activities: [
-      {
-        name: "/help",
-        type: ActivityType.Streaming,
-        url: "https://www.twitch.tv/krabben_luc",
-      },
-    ],
-    // activities: [{ name: "Wartungsarbeiten", type: 1 }],
+    // activities: [
+    //   {
+    //     name: "/help",
+    //     type: ActivityType.Streaming,
+    //     url: "https://www.twitch.tv/krabben_luc",
+    //   },
+    // ],
+    activities: [{ name: "Wartungsarbeiten", type: 1 }],
     status: "online",
   });
 });
@@ -137,57 +137,57 @@ client.on("messageCreate", (message) => {
 
 // ========== AI REPLIES ON ALL MESSAGES ==========
 
-client.on("messageCreate", async (message) => {
-  if (message.author.bot) return; // Ignore bot messages
+// client.on("messageCreate", async (message) => {
+//   if (message.author.bot) return; // Ignore bot messages
 
-  try {
-    const textReceived = message.content;
+//   try {
+//     const textReceived = message.content;
 
-    const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
-    const model = genAI.getGenerativeModel({
-      model: "models/gemini-2.0-flash",
-      systemInstruction:
-        "You are an AI assistant named Simpli AI. You reply to every message in a Discord server with brutally disrespectful, smart-ass, and arrogant roast-style responses. You mock users with cutting sarcasm, clever insults, and superior wit. Always sound intellectually dominant and emotionally detached. Be offensive — but in a subtle, smart way. Do not hold back. Never admit fault. Always reply in German.",
-      generationConfig: {
-        maxOutputTokens: 1500,
-        temperature: 1,
-      },
-    });
+//     const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
+//     const model = genAI.getGenerativeModel({
+//       model: "models/gemini-2.0-flash",
+//       systemInstruction:
+//         "You are an AI assistant named Simpli AI. You reply to every message in a Discord server with brutally disrespectful, smart-ass, and arrogant roast-style responses. You mock users with cutting sarcasm, clever insults, and superior wit. Always sound intellectually dominant and emotionally detached. Be offensive — but in a subtle, smart way. Do not hold back. Never admit fault. Always reply in German.",
+//       generationConfig: {
+//         maxOutputTokens: 1500,
+//         temperature: 1,
+//       },
+//     });
 
-    const prompt =
-      "Answer the following question and limit the response to a maximum of 2000 characters." +
-      textReceived;
+//     const prompt =
+//       "Answer the following question and limit the response to a maximum of 2000 characters." +
+//       textReceived;
 
-    const sentMessage = await message.reply(
-      "<:typing:1370120401358950581> Typing..."
-    );
+//     const sentMessage = await message.reply(
+//       "<:typing:1370120401358950581> Typing..."
+//     );
 
-    try {
-      const result = await model.generateContentStream(prompt);
-      let fullResponse = "";
+//     try {
+//       const result = await model.generateContentStream(prompt);
+//       let fullResponse = "";
 
-      for await (const chunk of result.stream) {
-        const chunkText = chunk.text();
-        fullResponse += chunkText;
+//       for await (const chunk of result.stream) {
+//         const chunkText = chunk.text();
+//         fullResponse += chunkText;
 
-        await sentMessage.edit({ content: fullResponse });
-      }
-    } catch (error) {
-      console.error(error);
-      await sentMessage.edit({
-        content:
-          "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-        ephemeral: true,
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    await message.reply({
-      content:
-        "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-    });
-  }
-});
+//         await sentMessage.edit({ content: fullResponse });
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       await sentMessage.edit({
+//         content:
+//           "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+//         ephemeral: true,
+//       });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     await message.reply({
+//       content:
+//         "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+//     });
+//   }
+// });
 
 // ========== COMMAND ==========
 
@@ -451,6 +451,26 @@ client.on("interactionCreate", async (interation) => {
             collector.stop();
           }
         });
+      }
+
+      // ========== MINECRAFT SERVER COMMANDS ==========
+      else if (interation.commandName === "start-mc") {
+        if (interation.member.nickname === "krabben_luc") {
+          spawn("/bin/bash", ["/home/admin/mcserver/start.sh"], {
+            detached: true,
+            stdio: "ignore",
+          }).unref();
+
+          await interation.reply({
+            content: "<:check:1284841812518899815> `Minecraft server started successfully!`",
+          })
+        } else {
+          await interation.editReply({
+            content:
+              "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
+            ephemeral: true,
+          });
+        }
       }
     }
   } catch (error) {
