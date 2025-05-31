@@ -456,16 +456,18 @@ client.on("interactionCreate", async (interation) => {
       // ========== MINECRAFT SERVER COMMANDS ==========
       else if (interation.commandName === "start-mc") {
         if (interation.member.nickname === "krabben_luc") {
+          await interation.deferReply();
           spawn("/bin/bash", ["/home/admin/mcserver/start.sh"], {
             detached: true,
             stdio: "ignore",
           }).unref();
 
           await interation.reply({
-            content: "<:check:1284841812518899815> `Minecraft server started successfully!`",
-          })
+            content:
+              "<:check:1284841812518899815> `Minecraft server started successfully!`",
+          });
         } else {
-          await interation.editReply({
+          await interation.reply({
             content:
               "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
             ephemeral: true,
