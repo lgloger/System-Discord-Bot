@@ -13,6 +13,12 @@ dotenv.config();
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Minecraft Server
+import { 
+  spawn,
+  exec 
+} from "child_process";
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -455,8 +461,9 @@ client.on("interactionCreate", async (interation) => {
 
       // ========== MINECRAFT SERVER COMMANDS ==========
       else if (interation.commandName === "start-mc") {
-        if (interation.member.nickname === "krabben_luc") {
-          await interation.deferReply();
+        const userId = interation.user.id;
+
+        if (userId === "714741152271564861") {
           spawn("/bin/bash", ["/home/admin/mcserver/start.sh"], {
             detached: true,
             stdio: "ignore",
