@@ -464,7 +464,7 @@ client.on("interactionCreate", async (interation) => {
         const userId = interation.user.id;
 
         if (userId === "714741152271564861") {
-          spawn("/bin/bash", ["/home/admin/mcserver/start.sh"], {
+          spawn('lxterminal', ['-e', 'bash /home/admin/mcserver/start.sh'], {
             detached: true,
             stdio: "ignore",
           }).unref();
