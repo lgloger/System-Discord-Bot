@@ -459,10 +459,10 @@ client.on("interactionCreate", async (interation) => {
         const userId = interation.user.id;
 
         if (userId === "714741152271564861") {
-          await interation.deferReply({ ephemeral: true });
-          
+          await interation.deferReply();
+
           // CHECK SERVER STATE
-          exec("screen -ls", (error, stdout, stderr) => {
+          exec("screen -ls || true", (error, stdout, stderr) => {
             if (error) {
               console.error(`Error while using screen -ls: ${error}`);
               interation.editReply(
