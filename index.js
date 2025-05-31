@@ -526,10 +526,6 @@ client.on("interactionCreate", async (interation) => {
             const isRunning = stdout.includes("minecraft");
 
             if (isRunning) {
-              interation.editReply(
-                "<:error:1284753947680309318> `The Server is already running.`"
-              );
-            } else {
               exec(
                 'screen -S minecraft -X stuff "stop\n"',
                 (error, stdout, stderr) => {
@@ -547,6 +543,10 @@ client.on("interactionCreate", async (interation) => {
                       "<:check:1284841812518899815> `Minecraft server stopped successfully!`",
                   });
                 }
+              );
+            } else {
+              interation.editReply(
+                "<:error:1284753947680309318> `The Server is not running.`"
               );
             }
           });
