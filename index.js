@@ -136,59 +136,100 @@ client.on("messageCreate", (message) => {
   }
 });
 
-// ========== AI REPLIES ON ALL MESSAGES ==========
+// ========== AI REPLIES ON ALL INSULTS ==========
 
-// client.on("messageCreate", async (message) => {
-//   if (message.author.bot) return; // Ignore bot messages
+// IS INSULT FUNCTION
+async function isInsult(text) {
+  try {
+    const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
+    const model = genAI.getGenerativeModel({
+      model: "models/gemini-2.0-flash",
+      systemInstruction:
+        "You are an AI that determines if a given text is an insult or not. You only answer with 'true' if the text is an insult, otherwise answer with 'false'.",
+      generationConfig: {
+        maxOutputTokens: 100,
+        temperature: 1,
+      },
+    });
 
-//   try {
-//     const textReceived = message.content;
+    try {
+      const result = await model.generateContent(text);
+      const response = result.response.text();
 
-//     const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
-//     const model = genAI.getGenerativeModel({
-//       model: "models/gemini-2.0-flash",
-//       systemInstruction:
-//         "You are an AI assistant named Simpli AI. You reply to every message in a Discord server with brutally disrespectful, smart-ass, and arrogant roast-style responses. You mock users with cutting sarcasm, clever insults, and superior wit. Always sound intellectually dominant and emotionally detached. Be offensive — but in a subtle, smart way. Do not hold back. Never admit fault. Always reply in German.",
-//       generationConfig: {
-//         maxOutputTokens: 1500,
-//         temperature: 1,
-//       },
-//     });
+      if (response.toLowerCase().includes("true")) {
+        return true;
+      } else if (response.toLowerCase().includes("false")) {
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  } catch (error) {
+    console.error(error);
+    await message.reply({
+      content:
+        "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+    });
+  }
+}
 
-//     const prompt =
-//       "Answer the following question and limit the response to a maximum of 2000 characters." +
-//       textReceived;
+client.on("messageCreate", async (message) => {
+  if (message.author.bot) return;
 
-//     const sentMessage = await message.reply(
-//       "<:typing:1370120401358950581> Typing..."
-//     );
+  const result = await isInsult(message.content);
 
-//     try {
-//       const result = await model.generateContentStream(prompt);
-//       let fullResponse = "";
+  if (result) {
+    try {
+      const textReceived = message.content;
 
-//       for await (const chunk of result.stream) {
-//         const chunkText = chunk.text();
-//         fullResponse += chunkText;
+      const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
+      const model = genAI.getGenerativeModel({
+        model: "models/gemini-2.0-flash",
+        systemInstruction:
+          "You are an AI assistant named Simpli AI. You reply to every message in a Discord server with brutally disrespectful, smart-ass, and arrogant roast-style responses. You mock users with cutting sarcasm, clever insults, and superior wit. Always sound intellectually dominant and emotionally detached. Be offensive — but in a subtle, smart way. Do not hold back. Never admit fault. Always reply in German.",
+        generationConfig: {
+          maxOutputTokens: 1500,
+          temperature: 1,
+        },
+      });
 
-//         await sentMessage.edit({ content: fullResponse });
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       await sentMessage.edit({
-//         content:
-//           "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-//         ephemeral: true,
-//       });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     await message.reply({
-//       content:
-//         "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-//     });
-//   }
-// });
+      const prompt =
+        "Answer the following question and limit the response to a maximum of 2000 characters." +
+        textReceived;
+
+      const sentMessage = await message.reply(
+        "<:typing:1370120401358950581> Typing..."
+      );
+
+      try {
+        const result = await model.generateContentStream(prompt);
+        let fullResponse = "";
+
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text();
+          fullResponse += chunkText;
+
+          await sentMessage.edit({ content: fullResponse });
+        }
+      } catch (error) {
+        console.error(error);
+        await sentMessage.edit({
+          content:
+            "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+          ephemeral: true,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      await message.reply({
+        content:
+          "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+      });
+    }
+  } else {
+    return;
+  }
+});
 
 // ========== COMMAND ==========
 
@@ -454,7 +495,7 @@ client.on("interactionCreate", async (interation) => {
         });
       }
 
-      // ========== MINECRAFT SERVER COMMANDS ==========
+      // ========== MINECRAFT SERVER START ==========
       else if (interation.commandName === "start-mc") {
         const userId = interation.user.id;
 
@@ -507,7 +548,10 @@ client.on("interactionCreate", async (interation) => {
             ephemeral: true,
           });
         }
-      } else if (interation.commandName == "stop-mc") {
+      }
+
+      // ========== MINECRAFT SERVER STOP ==========
+      else if (interation.commandName == "stop-mc") {
         const userId = interation.user.id;
 
         if (userId === "714741152271564861") {
