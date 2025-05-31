@@ -511,24 +511,45 @@ client.on("interactionCreate", async (interation) => {
         const userId = interation.user.id;
 
         if (userId === "714741152271564861") {
-          exec(
-            'screen -S minecraft -X stuff "stop\n"',
-            (error, stdout, stderr) => {
-              if (error) {
-                console.error(`Fehler: ${error}`);
-                return interation.reply({
-                  content:
-                    "<:error:1284753947680309318> `Error stopping Minecraft server.`",
-                  ephemeral: true,
-                });
-              }
-              console.log(`Minecraft server stopped successfully!`);
-              interation.reply({
-                content:
-                  "<:check:1284841812518899815> `Minecraft server stopped successfully!`",
-              });
+          await interation.deferReply();
+
+          // CHECK SERVER STATE
+          exec("screen -ls || true", (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error while using screen -ls: ${error}`);
+              interation.editReply(
+                "<:error:1284753947680309318> `Error while checking Minecraft server State.`"
+              );
+              return;
             }
-          );
+
+            const isRunning = stdout.includes("minecraft");
+
+            if (isRunning) {
+              interation.editReply(
+                "<:error:1284753947680309318> `The Server is already running.`"
+              );
+            } else {
+              exec(
+                'screen -S minecraft -X stuff "stop\n"',
+                (error, stdout, stderr) => {
+                  if (error) {
+                    console.error(`Fehler: ${error}`);
+                    return interation.editReply({
+                      content:
+                        "<:error:1284753947680309318> `Error stopping Minecraft server.`",
+                      ephemeral: true,
+                    });
+                  }
+                  console.log(`Minecraft server stopped successfully!`);
+                  interation.editReply({
+                    content:
+                      "<:check:1284841812518899815> `Minecraft server stopped successfully!`",
+                  });
+                }
+              );
+            }
+          });
         } else {
           await interation.reply({
             content:
