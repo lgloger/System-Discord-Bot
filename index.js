@@ -485,14 +485,14 @@ client.on("interactionCreate", async (interation) => {
                     console.error(
                       `Fehler beim Starten des Servers: ${error.message}`
                     );
-                    return interation.reply({
+                    return interation.editReply({
                       content:
                         "<:error:1284753947680309318> `Error starting Minecraft server.`",
                       ephemeral: true,
                     });
                   }
                   console.log(`Minecraft server started successfully!`);
-                  interation.reply({
+                  interation.editReply({
                     content:
                       "<:check:1284841812518899815> `Minecraft server started successfully!`",
                   });
