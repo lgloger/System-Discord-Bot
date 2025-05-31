@@ -459,28 +459,47 @@ client.on("interactionCreate", async (interation) => {
         const userId = interation.user.id;
 
         if (userId === "714741152271564861") {
-          exec(
-            "cd /home/admin/mcserver && screen -S minecraft -dm java -Xmx1024M -Xms1024M -jar server.jar nogui",
-            (error, stdout, stderr) => {
-              if (error) {
-                console.error(
-                  `Fehler beim Starten des Servers: ${error.message}`
-                );
-                return interation.reply({
-                  content:
-                    "<:error:1284753947680309318> `Error starting Minecraft server.`",
-                  ephemeral: true,
-                });
-              }
-              console.log(
-                `Minecraft server started successfully!`
+          await interation.deferReply({ ephemeral: true });
+          
+          // CHECK SERVER STATE
+          exec("screen -ls", (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error while using screen -ls: ${error}`);
+              interation.editReply(
+                "<:error:1284753947680309318> `Error while checking Minecraft server State.`"
               );
-              interation.reply({
-                content:
-                  "<:check:1284841812518899815> `Minecraft server started successfully!`",
-              });
+              return;
             }
-          );
+
+            const isRunning = stdout.includes("minecraft");
+
+            if (isRunning) {
+              interation.editReply(
+                "<:error:1284753947680309318> `The Server is already running.`"
+              );
+            } else {
+              exec(
+                "cd /home/admin/mcserver && screen -S minecraft -dm java -Xmx1024M -Xms1024M -jar server.jar nogui",
+                (error, stdout, stderr) => {
+                  if (error) {
+                    console.error(
+                      `Fehler beim Starten des Servers: ${error.message}`
+                    );
+                    return interation.reply({
+                      content:
+                        "<:error:1284753947680309318> `Error starting Minecraft server.`",
+                      ephemeral: true,
+                    });
+                  }
+                  console.log(`Minecraft server started successfully!`);
+                  interation.reply({
+                    content:
+                      "<:check:1284841812518899815> `Minecraft server started successfully!`",
+                  });
+                }
+              );
+            }
+          });
         } else {
           await interation.reply({
             content:
@@ -503,9 +522,7 @@ client.on("interactionCreate", async (interation) => {
                   ephemeral: true,
                 });
               }
-              console.log(
-                `Minecraft server stopped successfully!`
-              );
+              console.log(`Minecraft server stopped successfully!`);
               interation.reply({
                 content:
                   "<:check:1284841812518899815> `Minecraft server stopped successfully!`",
