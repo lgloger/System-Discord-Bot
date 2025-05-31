@@ -472,6 +472,9 @@ client.on("interactionCreate", async (interation) => {
                   ephemeral: true,
                 });
               }
+              console.log(
+                `Minecraft server started successfully!`
+              );
               interation.reply({
                 content:
                   "<:check:1284841812518899815> `Minecraft server started successfully!`",
@@ -500,6 +503,9 @@ client.on("interactionCreate", async (interation) => {
                   ephemeral: true,
                 });
               }
+              console.log(
+                `Minecraft server stopped successfully!`
+              );
               interation.reply({
                 content:
                   "<:check:1284841812518899815> `Minecraft server stopped successfully!`",
