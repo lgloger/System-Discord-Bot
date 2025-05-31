@@ -12,8 +12,6 @@ import {
 dotenv.config();
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// Minecraft Server
 import { spawn, exec } from "child_process";
 
 const client = new Client({
