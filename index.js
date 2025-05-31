@@ -462,7 +462,7 @@ client.on("interactionCreate", async (interation) => {
 
         if (userId === "714741152271564861") {
           exec(
-            "screen -S minecraft -dm java -Xmx1024M -Xms1024M -jar /home/admin/mcserver/server.jar",
+            "cd /home/admin/mcserver && screen -S minecraft -dm java -Xmx1024M -Xms1024M -jar server.jar nogui",
             (error, stdout, stderr) => {
               if (error) {
                 console.error(
@@ -491,20 +491,23 @@ client.on("interactionCreate", async (interation) => {
         const userId = interation.user.id;
 
         if (userId === "714741152271564861") {
-          exec("pkill -f 'java.*server\\.jar'", (error, stdout, stderr) => {
-            if (error) {
-              console.error(`Fehler: ${error}`);
-              return interation.reply({
+          exec(
+            'screen -S minecraft -X stuff "stop\n"',
+            (error, stdout, stderr) => {
+              if (error) {
+                console.error(`Fehler: ${error}`);
+                return interation.reply({
+                  content:
+                    "<:error:1284753947680309318> `Error stopping Minecraft server.`",
+                  ephemeral: true,
+                });
+              }
+              interation.reply({
                 content:
-                  "<:error:1284753947680309318> `Error stopping Minecraft server.`",
-                ephemeral: true,
+                  "<:check:1284841812518899815> `Minecraft server stopped successfully!`",
               });
             }
-            interation.reply({
-              content:
-                "<:check:1284841812518899815> `Minecraft server stopped successfully!`",
-            });
-          });
+          );
         } else {
           await interation.reply({
             content:
