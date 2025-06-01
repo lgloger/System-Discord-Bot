@@ -175,6 +175,7 @@ async function isInsult(text) {
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
+  if (message.attachments.size > 0) return;
 
   const result = await isInsult(message.content);
 
