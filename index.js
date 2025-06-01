@@ -145,7 +145,7 @@ async function isInsult(text) {
     const model = genAI.getGenerativeModel({
       model: "models/gemini-2.0-flash",
       systemInstruction:
-        "You are an AI that determines if a given text is an insult or not. You only answer with 'true' if the text is an insult, otherwise answer with 'false'.",
+        "You are an AI that determines whether a given text contains a serious insult. Only respond with 'true' if the text contains a severe or clearly offensive insult, such as hate speech, extreme slurs, threats, or dehumanizing language. Mild insults, slang, sarcasm, rudeness, or crude humor are not enough. If the text is not a serious insult, respond with 'false'. Respond with only 'true' or 'false' (in quotes), with no explanation.",
       generationConfig: {
         maxOutputTokens: 100,
         temperature: 1,
