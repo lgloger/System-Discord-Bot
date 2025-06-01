@@ -147,7 +147,7 @@ async function isInsult(text) {
       systemInstruction:
         "You are an AI that determines whether a given text contains a serious insult. Only respond with 'true' if the text contains a severe or clearly offensive insult, such as hate speech, extreme slurs, threats, or dehumanizing language. Mild insults, slang, sarcasm, rudeness, or crude humor are not enough. If the text is not a serious insult, respond with 'false'. Respond with only 'true' or 'false' (in quotes), with no explanation.",
       generationConfig: {
-        maxOutputTokens: 100,
+        maxOutputTokens: 50,
         temperature: 1,
       },
     });
@@ -189,7 +189,7 @@ client.on("messageCreate", async (message) => {
         systemInstruction:
           "You are an AI assistant named Simpli AI. You reply to every message in a Discord server with brutally disrespectful, smart-ass, and arrogant roast-style responses. You mock users with cutting sarcasm, clever insults, and superior wit. Always sound intellectually dominant and emotionally detached. Be offensive — but in a subtle, smart way. Do not hold back. Never admit fault. Always reply in German.",
         generationConfig: {
-          maxOutputTokens: 500,
+          maxOutputTokens: 100,
           temperature: 1,
         },
       });
