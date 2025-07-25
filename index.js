@@ -139,7 +139,7 @@ client.on("messageCreate", (message) => {
 // ========== AI REPLIES ON ALL INSULTS ==========
 
 // IS INSULT FUNCTION
-async function isInsult(text) {
+/* async function isInsult(text) {
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
     const model = genAI.getGenerativeModel({
@@ -230,7 +230,7 @@ client.on("messageCreate", async (message) => {
   } else {
     return;
   }
-});
+}); */
 
 // ========== COMMAND ==========
 
