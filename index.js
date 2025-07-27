@@ -54,7 +54,7 @@ client.once("ready", () => {
 
   setInterval(() => {
     checkSales(sendToDiscord).catch(console.error);
-  }, 30_000);
+  }, 5 * 60 * 1000);
 });
 
 // Give new Members a Role
