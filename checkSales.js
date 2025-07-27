@@ -8,7 +8,11 @@ let lastSentSaleId = null;
 export async function checkSales(sendToDiscord) {
   const ROBLOSECRUITY = process.env.ROBLOSECURITY;
 
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath: '/usr/bin/chromium-browser', 
+  });
+  
   const page = await browser.newPage();
 
   await page.setCookie({
