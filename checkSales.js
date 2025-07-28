@@ -93,7 +93,6 @@ export async function checkSales(sendToDiscord) {
             inline: true,
           }
         )
-        .addFields({})
         .setTimestamp()
         .setFooter({
           text: `quantum's Utilities`,
