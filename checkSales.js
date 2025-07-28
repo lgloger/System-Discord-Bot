@@ -58,32 +58,29 @@ export async function checkSales(sendToDiscord) {
 
       const msg = new EmbedBuilder()
         .setColor("#2C2F33")
-        .setDescription(`### *New Roblox Sale*\n`)
+        .setTitle(`${latest.item}`)
+        .setAuthor({ name: "New Roblox item sold" })
         .setThumbnail(latest.userThumbnail)
         .addFields(
           {
-            name: "Date",
+            name: "**Date**",
             value: `${latest.date.replace("\n", " — ")}`,
             inline: true,
           },
           {
-            name: "Customer",
+            name: "**Customer**",
             value: `${latest.user}`,
             inline: true,
           }
         )
         .addFields(
           {
-            name: "Item",
-            value: `${latest.item}`,
-            inline: true,
-          },
-          {
-            name: "Robux",
+            name: "**Revenue**",
             value: `${latest.amount}`,
             inline: true,
           }
-        );
+        )
+        .setDescription('||<:1324740815154581546:>||');
 
       await sendToDiscord(msg);
     }
