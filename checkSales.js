@@ -56,6 +56,7 @@ export async function checkSales(sendToDiscord) {
         item: itemName,
         amount: cols[3]?.innerText.trim(),
         itemUrl: itemLink,
+        userThumbnail: userAvatarUrl,
       };
     });
   });
@@ -93,7 +94,7 @@ export async function checkSales(sendToDiscord) {
         })
         .setTimestamp()
         .setFooter({
-          text: `<@1324740815154581546>`,
+          text: `<@&1324740815154581546>`,
           iconURL: "https://i.imgur.com/jztAYkV.png",
         });
 
