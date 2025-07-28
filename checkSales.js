@@ -38,12 +38,24 @@ export async function checkSales(sendToDiscord) {
       const userAvatarImg = cols[1]?.querySelector(".avatar-card-image img");
       const userAvatarUrl = userAvatarImg ? userAvatarImg.src : null;
 
+      const itemColumn = cols[2];
+      let itemName = null;
+      let itemLink = null;
+
+      if (itemColumn) {
+        const itemLinkElement = itemColumn.querySelector("a.text-link");
+        if (itemLinkElement) {
+          itemLink = itemLinkElement.href;
+          itemName = itemLinkElement.innerText.trim();
+        }
+      }
+
       return {
         date: cols[0]?.innerText.trim(),
         user: cols[1]?.innerText.trim(),
-        item: cols[2]?.innerText.trim(),
+        item: itemName,
         amount: cols[3]?.innerText.trim(),
-        userThumbnail: userAvatarUrl,
+        itemUrl: itemLink,
       };
     });
   });
@@ -58,7 +70,7 @@ export async function checkSales(sendToDiscord) {
 
       const msg = new EmbedBuilder()
         .setColor("#2C2F33")
-        .setTitle(`${latest.item}`)
+        .setTitle(`[${latest.item}](${latest.itemUrl})`)
         .setAuthor({ name: "New Roblox item sold" })
         .setThumbnail(latest.userThumbnail)
         .addFields(
@@ -73,14 +85,16 @@ export async function checkSales(sendToDiscord) {
             inline: true,
           }
         )
-        .addFields(
-          {
-            name: "**Revenue**",
-            value: `${latest.amount}`,
-            inline: true,
-          }
-        )
-        .setDescription('||<:1324740815154581546:>||');
+        .addFields({
+          name: "**Revenue**",
+          value: `${latest.amount}`,
+          inline: true,
+        })
+        .setTimestamp()
+        .setFooter({
+          text: `<:1324740815154581546:>`,
+          iconURL: "https://i.imgur.com/jztAYkV.png",
+        });
 
       await sendToDiscord(msg);
     }
