@@ -70,7 +70,9 @@ export async function checkSales(sendToDiscord) {
             name: "Customer",
             value: `${latest.user}`,
             inline: true,
-          },
+          }
+        )
+        .addFields(
           {
             name: "Item",
             value: `${latest.item}`,
