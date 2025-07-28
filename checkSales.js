@@ -75,6 +75,7 @@ export async function checkSales(sendToDiscord) {
         .setURL(`${latest.itemUrl}`)
         .setAuthor({ name: "New Roblox item sold" })
         .setThumbnail(latest.userThumbnail)
+        .setDescription(`<@&1324740815154581546>\n`)
         .addFields(
           {
             name: "**Date**",
@@ -85,16 +86,17 @@ export async function checkSales(sendToDiscord) {
             name: "**Customer**",
             value: `${latest.user}`,
             inline: true,
+          },
+          {
+            name: "**Revenue**",
+            value: `${latest.amount}`,
+            inline: true,
           }
         )
-        .addFields({
-          name: "**Revenue**",
-          value: `${latest.amount}`,
-          inline: true,
-        })
+        .addFields({})
         .setTimestamp()
         .setFooter({
-          text: `<@&1324740815154581546>`,
+          text: `quantum's Utilities`,
           iconURL: "https://i.imgur.com/jztAYkV.png",
         });
 
