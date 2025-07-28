@@ -40,7 +40,6 @@ client.once("ready", () => {
         url: "https://www.twitch.tv/krabben_luc",
       },
     ],
-    // activities: [{ name: "Wartungsarbeiten", type: 1 }],
     status: "online",
   });
 

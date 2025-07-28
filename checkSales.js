@@ -1,7 +1,5 @@
 import puppeteer from "puppeteer";
-import {
-  EmbedBuilder,
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
 let lastSentSaleId = null;
 
@@ -10,9 +8,9 @@ export async function checkSales(sendToDiscord) {
 
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath: '/usr/bin/chromium-browser', 
+    executablePath: "/usr/bin/chromium-browser",
   });
-  
+
   const page = await browser.newPage();
 
   await page.setCookie({
@@ -37,11 +35,15 @@ export async function checkSales(sendToDiscord) {
     const rows = Array.from(document.querySelectorAll("tr.pending"));
     return rows.map((row) => {
       const cols = row.querySelectorAll("td");
+      const userAvatarImg = cols[1]?.querySelector(".avatar-card-image img");
+      const userAvatarUrl = userAvatarImg ? userAvatarImg.src : null;
+
       return {
         date: cols[0]?.innerText.trim(),
         user: cols[1]?.innerText.trim(),
         item: cols[2]?.innerText.trim(),
         amount: cols[3]?.innerText.trim(),
+        userThumbnail: userAvatarUrl,
       };
     });
   });
@@ -56,13 +58,29 @@ export async function checkSales(sendToDiscord) {
 
       const msg = new EmbedBuilder()
         .setColor("#2C2F33")
-        .setDescription(
-          `### *New Roblox Sale*\n` +
-            `- **📅 Date:** ${latest.date.replace("\n", " — ")}\n` +
-            `- 👤 **Customer:** ${latest.user}\n` +
-            `- 📦 **Item:** ${latest.item}\n` +
-            `- 💰 **Robux:** ${latest.amount}\n\n` +
-            `|| <@714741152271564861> ||`
+        .setDescription(`### *New Roblox Sale*\n`)
+        .setThumbnail(latest.userThumbnail)
+        .addFields(
+          {
+            name: "Date",
+            value: `${latest.date.replace("\n", " — ")}`,
+            inline: true,
+          },
+          {
+            name: "Customer",
+            value: `${latest.user}`,
+            inline: true,
+          },
+          {
+            name: "Item",
+            value: `${latest.item}`,
+            inline: true,
+          },
+          {
+            name: "Robux",
+            value: `${latest.amount}`,
+            inline: true,
+          }
         );
 
       await sendToDiscord(msg);
