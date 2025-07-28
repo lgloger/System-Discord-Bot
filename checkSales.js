@@ -70,7 +70,8 @@ export async function checkSales(sendToDiscord) {
 
       const msg = new EmbedBuilder()
         .setColor("#2C2F33")
-        .setTitle(`[${latest.item}](${latest.itemUrl})`)
+        .setTitle(`${latest.item}`)
+        .setURL(`${latest.itemUrl}`)
         .setAuthor({ name: "New Roblox item sold" })
         .setThumbnail(latest.userThumbnail)
         .addFields(
@@ -92,7 +93,7 @@ export async function checkSales(sendToDiscord) {
         })
         .setTimestamp()
         .setFooter({
-          text: `<:1324740815154581546:>`,
+          text: `<@1324740815154581546>`,
           iconURL: "https://i.imgur.com/jztAYkV.png",
         });
 
