@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import cron from "node-cron";
 import {
   PermissionsBitField,
   Client,
@@ -43,6 +44,7 @@ client.once("ready", () => {
     status: "online",
   });
 
+  // Check Roblox Sales
   async function sendToDiscord(msg) {
     const channel = await client.channels.fetch("1399121444964663378");
     if (channel)
@@ -54,6 +56,21 @@ client.once("ready", () => {
   setInterval(() => {
     checkSales(sendToDiscord).catch(console.error);
   }, 5 * 60 * 1000);
+
+  // Send daily Advertaisement
+  cron.schedule(
+    "0 16 * * *",
+    () => {
+      const channelId = "1399746716994895882";
+      const channel = client.channels.cache.get(channelId);
+      if (channel?.isTextBased()) {
+        channel.send("https://discord.gg/T3f38fC29f");
+      }
+    },
+    {
+      timezone: "Europe/Berlin",
+    }
+  );
 });
 
 // Give new Members a Role
