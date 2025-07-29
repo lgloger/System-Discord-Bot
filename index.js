@@ -77,7 +77,8 @@ client.once("ready", () => {
 
       ✨ **Quality isn’t just a word – it’s our standard.**\n\n
 
-      🔗 **Join now:** https://discord.gg/4qs2eGG9zG`
+      🔗 **Join now:** https://discord.gg/4qs2eGG9zG
+      🎮 **Roblox Group:** https://www.roblox.com/communities/15069287/QU-NTUM#!/about`
     )
     .setImage("https://i.imgur.com/jztAYkV.png")
     .setTimestamp()
@@ -158,6 +159,21 @@ const helpEmbed = {
     text: "Quantum-AI",
   },
 };
+
+// ========== Support ==========
+client.on("messageCreate", async (message) => {
+  if (message.content === "!support") {
+    if (
+      message.member.permissions.has(PermissionsBitField.Flags.Administrator)
+    ) {
+      var banner = `https://i.imgur.com/ytDd3UD.png`;
+
+      await message.channel.send({
+        files: [{ attachment: banner, name: "Banner.png" }],
+      });
+    }
+  }
+});
 
 // ========== RULES ==========
 client.on("messageCreate", async (message) => {
