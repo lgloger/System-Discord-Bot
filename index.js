@@ -58,13 +58,44 @@ client.once("ready", () => {
   }, 5 * 60 * 1000);
 
   // Send daily Advertaisement
+  const adEmbed = new EmbedBuilder()
+    .setColor("#2C2F33")
+    .setTitle(`Quantum`)
+    .setURL(`${latest.itemUrl}`)
+    .setAuthor({ name: "quantum's Utilities" })
+    .setDescription(
+      `**🌌 Welcome to Quantum – Redefining Roblox Fashion!**\n\n
+
+      🧵 **Premium Roblox Clothing**\n
+      Stand out with **high-quality and unique outfits** you won’t find anywhere else.\n\n
+
+      🎨 **Clean & Aesthetic Server Design**\n 
+      Enjoy a **modern, well-structured** layout that makes everything easy to navigate.\n\n
+
+      🚀 **Active Community & Exclusive Drops**\n
+      Be part of a **growing fashion-focused community** and catch limited-time releases!\n\n
+
+      ✨ **Quality isn’t just a word – it’s our standard.**\n\n
+
+      🔗 **Join now:** https://discord.gg/4qs2eGG9zG`
+    )
+    .setImage("https://i.imgur.com/jztAYkV.png")
+    .setTimestamp()
+    .setFooter({
+      text: `quantum's Utilities`,
+      iconURL: "https://i.imgur.com/jztAYkV.png",
+    });
+
   cron.schedule(
-    "0 16 * * *",
+    "0 19 * * *",
     () => {
-      const channelId = "1399746716994895882";
+      const channelId = "1399785684671398049";
       const channel = client.channels.cache.get(channelId);
+
       if (channel?.isTextBased()) {
-        channel.send("https://discord.gg/T3f38fC29f");
+        channel.send({
+          embeds: [adEmbed],
+        });
       }
     },
     {
