@@ -61,7 +61,6 @@ client.once("ready", () => {
   const adEmbed = new EmbedBuilder()
     .setColor("#2C2F33")
     .setTitle(`Quantum`)
-    .setURL(`${latest.itemUrl}`)
     .setAuthor({ name: "quantum's Utilities" })
     .setDescription(
       `**🌌 Welcome to Quantum – Redefining Roblox Fashion!**\n\n
