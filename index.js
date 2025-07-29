@@ -86,7 +86,7 @@ client.once("ready", () => {
     });
 
   cron.schedule(
-    "0 19 * * *",
+    "0 16 * * *",
     () => {
       const channelId = "1399785684671398049";
       const channel = client.channels.cache.get(channelId);
