@@ -61,7 +61,6 @@ client.once("ready", () => {
   const adEmbed = new EmbedBuilder()
     .setColor("#2C2F33")
     .setTitle(`Quantum`)
-    .setURL(`${latest.itemUrl}`)
     .setAuthor({ name: "quantum's Utilities" })
     .setDescription(
       `**🌌 Welcome to Quantum – Redefining Roblox Fashion!**\n\n
@@ -88,7 +87,7 @@ client.once("ready", () => {
     });
 
   cron.schedule(
-    "0 19 * * *",
+    "0 16 * * *",
     () => {
       const channelId = "1399785684671398049";
       const channel = client.channels.cache.get(channelId);
