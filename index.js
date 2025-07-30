@@ -505,7 +505,7 @@ client.on("interactionCreate", async (interation) => {
       else if (interation.commandName === "start-mc") {
         const userId = interation.user.id;
 
-        if (userId === "714741152271564861") {
+        // if (userId === "714741152271564861") {
           await interation.deferReply();
 
           // CHECK SERVER STATE
@@ -547,20 +547,20 @@ client.on("interactionCreate", async (interation) => {
               );
             }
           });
-        } else {
-          await interation.reply({
-            content:
-              "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
-            ephemeral: true,
-          });
-        }
+        // } else {
+        //   await interation.reply({
+        //     content:
+        //       "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
+        //     ephemeral: true,
+        //   });
+        // }
       }
 
       // ========== MINECRAFT SERVER STOP ==========
       else if (interation.commandName == "stop-mc") {
         const userId = interation.user.id;
 
-        if (userId === "714741152271564861") {
+        // if (userId === "714741152271564861") {
           await interation.deferReply();
 
           // CHECK SERVER STATE
@@ -600,13 +600,13 @@ client.on("interactionCreate", async (interation) => {
               );
             }
           });
-        } else {
-          await interation.reply({
-            content:
-              "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
-            ephemeral: true,
-          });
-        }
+        // } else {
+        //   await interation.reply({
+        //     content:
+        //       "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
+        //     ephemeral: true,
+        //   });
+        // }
       }
     }
   } catch (error) {
