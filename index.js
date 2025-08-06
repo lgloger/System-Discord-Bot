@@ -323,15 +323,6 @@ client.on("interactionCreate", async (interation) => {
               );
             }
           });
-<<<<<<< HEAD
-        } else {
-          await interation.reply({
-            content:
-              "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
-            ephemeral: true,
-          });
-        }
-=======
           } else {
             await interation.reply({
               content:
@@ -339,7 +330,6 @@ client.on("interactionCreate", async (interation) => {
               ephemeral: true,
             });
           }
->>>>>>> 7acd4556ad761ec5ffa265bbaaa35c3fcbc9d901
       }
 
       // ========== MINECRAFT SERVER STOP ==========
@@ -386,15 +376,9 @@ client.on("interactionCreate", async (interation) => {
               );
             }
           });
-<<<<<<< HEAD
-        } else {
-          await interation.reply({
-            content:
-=======
           } else {
             await interation.reply({
               content:
->>>>>>> 7acd4556ad761ec5ffa265bbaaa35c3fcbc9d901
               "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
             ephemeral: true,
           });
