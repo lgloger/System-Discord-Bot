@@ -29,15 +29,18 @@ const slashRegister = async () => {
               .setMaxLength(1000);
           }),
         new SlashCommandBuilder()
-          .setName("image")
-          .setDescription("Generates an image.")
-          .addStringOption((option) => {
-            return option
-              .setName("prompt")
-              .setDescription("Describe the image you want.")
+          .setName("insult")
+          .setDescription("Toggle the insult feature.")
+          .addStringOption((option) =>
+            option
+              .setName("toggle")
+              .setDescription("True or false to toggle the insult feature.")
               .setRequired(true)
-              .setMaxLength(5000);
-          }),
+              .addChoices(
+                { name: "True", value: "true" },
+                { name: "False", value: "false" }
+              )
+          ),
         new SlashCommandBuilder()
           .setName("blackjack")
           .setDescription("Play Blackjack with Simpli."),

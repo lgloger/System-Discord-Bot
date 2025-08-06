@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import cron from "node-cron";
 import {
-  PermissionsBitField,
   Client,
   GatewayIntentBits,
   EmbedBuilder,
@@ -11,10 +10,22 @@ import {
   ActivityType,
 } from "discord.js";
 dotenv.config();
-import { checkSales } from "./checkSales.js";
+import { exec } from "child_process";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { spawn, exec } from "child_process";
+// Import Interactions
+import { checkSales } from "./interactions/checkSales.js";
+import { addRole } from "./interactions/addRole.js";
+import { sendHelpEmbed } from "./interactions/helpCommand.js";
+import {
+  insultToggle,
+  createInsultMessage,
+} from "./interactions/smartInsults.js";
+import { askAICommand } from "./interactions/askAICommand.js";
+import {
+  sendSupportMessage,
+  sendRulesMessage,
+  sendSocialsMessage,
+} from "./interactions/sendPrefixMessages.js";
 
 const client = new Client({
   intents: [
@@ -26,10 +37,7 @@ const client = new Client({
   ],
 });
 
-const GEMINI_API_TOKEN = process.env.GEMINI_API_TOKEN;
-
 // ========== START UP ==========
-
 client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
@@ -63,18 +71,18 @@ client.once("ready", () => {
     .setTitle(`Quantum`)
     .setAuthor({ name: "quantum's Utilities" })
     .setDescription(
-      `**🌌 Welcome to Quantum – Redefining Roblox Fashion!**\n\n
+      `**🌌 Welcome to Quantum – Redefining Roblox Fashion!**\n
 
       🧵 **Premium Roblox Clothing**\n
-      Stand out with **high-quality and unique outfits** you won’t find anywhere else.\n\n
+      Stand out with **high-quality and unique outfits** you won’t find anywhere else.\n
 
       🎨 **Clean & Aesthetic Server Design**\n 
-      Enjoy a **modern, well-structured** layout that makes everything easy to navigate.\n\n
+      Enjoy a **modern, well-structured** layout that makes everything easy to navigate.\n
 
       🚀 **Active Community & Exclusive Drops**\n
-      Be part of a **growing fashion-focused community** and catch limited-time releases!\n\n
+      Be part of a **growing fashion-focused community** and catch limited-time releases!\n
 
-      ✨ **Quality isn’t just a word – it’s our standard.**\n\n
+      ✨ **Quality isn’t just a word – it’s our standard.**\n
 
       🔗 **Join now:** https://discord.gg/4qs2eGG9zG
       🎮 **Roblox Group:** https://www.roblox.com/communities/15069287/QU-NTUM#!/about`
@@ -105,135 +113,51 @@ client.once("ready", () => {
 });
 
 // Give new Members a Role
-
 client.on("guildMemberAdd", async (member) => {
-  const role = member.guild.roles.cache.find((role) => role.name === "Members");
+  addRole(member).catch(console.error);
+});
 
-  if (role) {
-    try {
-      await member.roles.add(role);
-      console.log(
-        `The role member has been added to the user: ${member.user.tag}`
-      );
-    } catch (error) {
-      console.error(error);
+// ========== SMART INSULTS ==========
+let insultState = false;
+
+// Handle Insult Slash Command
+client.on("interactionCreate", async (interation) => {
+  try {
+    if (interation.isCommand()) {
+      if (interation.commandName === "insult") {
+        insultState = insultToggle(interation, insultState);
+      }
     }
-  } else {
-    console.log("The role members does not exist");
+  } catch (error) {
+    console.error(error);
+    await interation.reply({
+      content:
+        "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+    });
   }
 });
 
-// Prefix Commands
-const helpEmbed = {
-  color: 0x9246ff,
-  title: "Quantum AI help",
-  description:
-    "<:report:1370120401358950581> **To report a bug, contact a moderator.**",
-  thumbnail: {
-    url: "https://i.imgur.com/XhmjN7U.png",
-  },
-  fields: [
-    {
-      name: "Commands list",
-      value:
-        "<:ListEmoji:1352740858146983946> Type /help to view a list of slash commands.",
-    },
-    {
-      name: "Chat with Simpli AI",
-      value:
-        "<:ListEmoji:1352740858146983946> Type /ask to chat with Simpli AI.",
-    },
-    {
-      name: "Generate Images",
-      value:
-        "<:ListEmoji:1352740858146983946> Type /image to generate a Image.",
-    },
-    {
-      name: "Blackjack",
-      value:
-        "<:ListEmoji:1352740858146983946> Type /blackjack to play Blackjack.",
-    },
-  ],
-  footer: {
-    text: "Quantum-AI",
-  },
-};
+// Handle Insult Messages
+client.on("messageCreate", async (message) => {
+  if (!insultState) return;
+  if (message.author.bot) return;
+  if (message.attachments.size > 0) return;
+
+  createInsultMessage(message).catch(console.error);
+});
 
 // ========== Support ==========
 client.on("messageCreate", async (message) => {
   if (message.content === "!support") {
-    if (
-      message.member.permissions.has(PermissionsBitField.Flags.Administrator)
-    ) {
-      var banner = `https://i.imgur.com/ytDd3UD.png`;
-
-      await message.channel.send({
-        files: [{ attachment: banner, name: "Banner.png" }],
-      });
-    }
+    sendSupportMessage(message).catch(console.error);
   }
-});
 
-// ========== RULES ==========
-client.on("messageCreate", async (message) => {
   if (message.content === "!rules") {
-    if (
-      message.member.permissions.has(PermissionsBitField.Flags.Administrator)
-    ) {
-      var banner = `https://i.imgur.com/vgyjxD7.png`;
-      const moderator = "1324718965460570124";
-
-      const rulesEmbed = new EmbedBuilder()
-        .setColor("#2C2F33")
-        .setDescription(
-          "# Rules & Guidelines\n" +
-            "1. **Be wholesome and treat others with kindness and respect.** All kinds of harassment, hate speech and impersonation will not be tolerated.\n" +
-            "2. **No spam.** This includes, but is not limited to, flooding the chat with many messages in a short time, posting excessive amounts of emojis, posting excessively long messages, posting your message to multiple channels at the same time and tagging members for no reason.\n" +
-            "3. **No NSFW** (not suitable for work) content of any kind, both in the text and voice channels.\n" +
-            "4. **No buying, selling, trading or asking for handouts.** This is not a marketplace.\n" +
-            "5. **Personal conflicts are to be handled privately** and not on public channels on this server.\n" +
-            "6. **Use channels for their intended purpose.** Please read the channel descriptions and keep conversations relevant. Off-topic content may be removed.\n" +
-            "7. **No abuse of bots or commands.** Using bots to spam, annoy others, or disrupt the server will result in restrictions or bans.\n" +
-            "8. **Respect staff decisions.** Moderators are here to keep the server safe and enjoyable. Arguing with them publicly may lead to warnings or timeouts.\n" +
-            "9. **English only unless stated otherwise.** To keep the conversation understandable for all, please speak English unless the channel says otherwise.\n" +
-            "10. **No inappropriate or offensive usernames/profile pictures.** Keep things clean and respectful. Mods may ask you to change names or avatars if necessary.\n\n" +
-            "Seen something violating our rules? Please, say something and tag our <@&" +
-            moderator +
-            "> who will take appropriate action. Avoid tagging moderators without good reasoning."
-        );
-
-      await message.channel.send({
-        files: [{ attachment: banner, name: "Banner.png" }],
-        embeds: [rulesEmbed],
-      });
-    }
+    sendRulesMessage(message).catch(console.error);
   }
-});
 
-// ========== SOCIALS ==========
-client.on("messageCreate", async (message) => {
   if (message.content === "!socials") {
-    if (
-      message.member.permissions.has(PermissionsBitField.Flags.Administrator)
-    ) {
-      var banner = `https://i.imgur.com/Oa0VNnj.png`;
-      const check = message.guild.emojis.cache.find((e) => e.name === "dc");
-      const roblox = message.guild.emojis.cache.find((e) => e.name === "rb");
-
-      const rulesEmbed = new EmbedBuilder()
-        .setColor("#2C2F33")
-        .setDescription(
-          `### *These are all of Quantum's official social channels. Any socials not listed here are most likely fake.*\n` +
-            `- ${check} https://discord.gg/4qs2eGG9zG\n` +
-            `- ${roblox} https://www.roblox.com/communities/15069287/QU-NTUM#!/about\n\n` +
-            `At the moment, Quantum does not have any accounts on other platforms than the ones above, such as TikTok, Instagram, Snapchat and other social media platforms that weren't listed`
-        );
-
-      await message.channel.send({
-        files: [{ attachment: banner, name: "Banner.png" }],
-        embeds: [rulesEmbed],
-      });
-    }
+    sendSocialsMessage(message).catch(console.error);
   }
 });
 
@@ -249,162 +173,14 @@ client.on("interactionCreate", async (interation) => {
     if (interation.isCommand()) {
       // ========== HELP ==========
       if (interation.commandName === "help") {
-        interation.reply({ embeds: [helpEmbed], ephemeral: true });
+        sendHelpEmbed(interation).catch(console.error);
       }
 
       // ========== ASK ==========
       if (interation.commandName === "ask") {
-        if (cooldown.has(user)) {
-          await interation.reply({
-            content:
-              "<:cooldown:1284614490763038823> `Please wait for the cooldown to end.`",
-            ephemeral: true,
-          });
-        } else {
-          const textReceived = interation.options.getString("prompt");
-
-          const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
-          const model = genAI.getGenerativeModel({
-            model: "models/gemini-2.0-flash",
-            systemInstruction:
-              "You are a AI assistant that helps people find information. Your name is Quantum AI.",
-            generationConfig: {
-              maxOutputTokens: 1500,
-              temperature: 1,
-            },
-          });
-
-          const prompt =
-            "Answer the following question and limit the response to a maximum of 2000 characters." +
-            textReceived;
-
-          await interation.deferReply();
-
-          try {
-            const result = await model.generateContentStream(prompt);
-            let fullResponse = "";
-
-            for await (const chunk of result.stream) {
-              const chunkText = chunk.text();
-              fullResponse += chunkText;
-
-              await interation.editReply({ content: fullResponse });
-            }
-          } catch (error) {
-            console.error(error);
-            await interation.editReply({
-              content:
-                "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-              ephemeral: true,
-            });
-          }
-
-          // Add Cooldown
-          cooldown.add(user);
-          setTimeout(() => {
-            cooldown.delete(user);
-          }, cooldownTime);
-        }
-      }
-
-      // ========== IMAGE ==========
-      else if (interation.commandName === "image") {
-        if (cooldown.has(user)) {
-          await interation.reply({
-            content:
-              "<:cooldown:1284614490763038823> `Please wait for the cooldown to end.`",
-            ephemeral: true,
-          });
-        } else {
-          const prompt = interation.options.getString("prompt");
-
-          await interation.deferReply();
-
-          try {
-            const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
-            const model = genAI.getGenerativeModel({
-              model: "gemini-2.0-flash-exp",
-            });
-
-            const response = await model.generateContent({
-              contents: [
-                {
-                  parts: [
-                    {
-                      text: "Generate a Image with this Description:" + prompt,
-                    },
-                  ],
-                },
-              ],
-              generationConfig: {
-                responseModalities: ["Text", "Image"],
-              },
-            });
-
-            if (
-              !response.response ||
-              !response.response.candidates ||
-              !Array.isArray(response.response.candidates)
-            ) {
-              await interation.reply({
-                content:
-                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-              });
-            }
-
-            const candidate = response.response.candidates[0];
-
-            if (!candidate.content || !candidate.content.parts) {
-              await interation.reply({
-                content:
-                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-              });
-            }
-
-            const parts = candidate.content.parts;
-
-            let imageBuffer;
-            for (const part of parts) {
-              if (part.inlineData && part.inlineData.data) {
-                const base64Image = part.inlineData.data;
-                imageBuffer = Buffer.from(base64Image, "base64");
-                break;
-              }
-            }
-
-            if (imageBuffer) {
-              await interation.editReply({
-                files: [
-                  { attachment: imageBuffer, name: "generated_image.png" },
-                ],
-              });
-            } else {
-              await interation.reply({
-                content:
-                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-              });
-            }
-          } catch (error) {
-            console.error("Error in image generation:", error);
-            if (interation.replied || interation.deferred) {
-              await interation.editReply({
-                content:
-                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-              });
-            } else {
-              await interation.reply({
-                content:
-                  "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
-                ephemeral: true,
-              });
-            }
-          }
-
-          cooldown.add(user);
-          setTimeout(() => {
-            cooldown.delete(user);
-          }, cooldownTime);
-        }
+        askAICommand(cooldown, cooldownTime, interation, user).catch(
+          console.error
+        );
       }
 
       // ========== Blackjack ==========
@@ -505,7 +281,7 @@ client.on("interactionCreate", async (interation) => {
       else if (interation.commandName === "start-mc") {
         const userId = interation.user.id;
 
-        // if (userId === "714741152271564861") {
+        if (userId === "714741152271564861") {
           await interation.deferReply();
 
           // CHECK SERVER STATE
@@ -547,20 +323,20 @@ client.on("interactionCreate", async (interation) => {
               );
             }
           });
-        // } else {
-        //   await interation.reply({
-        //     content:
-        //       "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
-        //     ephemeral: true,
-        //   });
-        // }
+        } else {
+          await interation.reply({
+            content:
+              "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
+            ephemeral: true,
+          });
+        }
       }
 
       // ========== MINECRAFT SERVER STOP ==========
       else if (interation.commandName == "stop-mc") {
         const userId = interation.user.id;
 
-        // if (userId === "714741152271564861") {
+        if (userId === "714741152271564861") {
           await interation.deferReply();
 
           // CHECK SERVER STATE
@@ -600,13 +376,13 @@ client.on("interactionCreate", async (interation) => {
               );
             }
           });
-        // } else {
-        //   await interation.reply({
-        //     content:
-        //       "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
-        //     ephemeral: true,
-        //   });
-        // }
+        } else {
+          await interation.reply({
+            content:
+              "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
+            ephemeral: true,
+          });
+        }
       }
     }
   } catch (error) {
