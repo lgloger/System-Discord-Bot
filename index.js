@@ -26,6 +26,7 @@ import {
   sendRulesMessage,
   sendSocialsMessage,
 } from "./interactions/sendPrefixMessages.js";
+import { handleServerCommand } from "./interactions/minecraftCommands/serverCommands.js";
 
 const client = new Client({
   intents: [
@@ -161,7 +162,7 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-// ========== COMMAND ==========
+// ========== INTERACTIONS ==========
 
 const cooldown = new Set();
 const cooldownTime = 15 * 1000;
@@ -276,109 +277,28 @@ client.on("interactionCreate", async (interation) => {
           }
         });
       }
+    }
+  } catch (error) {
+    console.error(error);
+    await interation.reply({
+      content:
+        "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
+    });
+  }
+});
 
-      // ========== MINECRAFT SERVER START ==========
-      else if (interation.commandName === "start-mc") {
+// ========== MINECRAFT SERVER COMMANDS ==========
+client.on("interactionCreate", async (interation) => {
+  try {
+    if (interation.isCommand()) {
+      if (interation.commandName === "server-toggle") {
         const userId = interation.user.id;
 
         if (userId === "714741152271564861") {
-          await interation.deferReply();
-
-          // CHECK SERVER STATE
-          exec("screen -ls || true", (error, stdout, stderr) => {
-            if (error) {
-              console.error(`Error while using screen -ls: ${error}`);
-              interation.editReply(
-                "<:error:1284753947680309318> `Error while checking Minecraft server State.`"
-              );
-              return;
-            }
-
-            const isRunning = stdout.includes("minecraft");
-
-            if (isRunning) {
-              interation.editReply(
-                "<:error:1284753947680309318> `The Server is already running.`"
-              );
-            } else {
-              exec(
-                "cd /home/admin/mcserver && screen -S minecraft -dm java -Xmx1024M -Xms1024M -jar server.jar nogui",
-                (error, stdout, stderr) => {
-                  if (error) {
-                    console.error(
-                      `Fehler beim Starten des Servers: ${error.message}`
-                    );
-                    return interation.editReply({
-                      content:
-                        "<:error:1284753947680309318> `Error starting Minecraft server.`",
-                      ephemeral: true,
-                    });
-                  }
-                  console.log(`Minecraft server started successfully!`);
-                  interation.editReply({
-                    content:
-                      "<:check:1284841812518899815> `Minecraft server started successfully!`",
-                  });
-                }
-              );
-            }
-          });
-          } else {
-            await interation.reply({
-              content:
-              "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
-              ephemeral: true,
-            });
-          }
-      }
-
-      // ========== MINECRAFT SERVER STOP ==========
-      else if (interation.commandName == "stop-mc") {
-        const userId = interation.user.id;
-
-        if (userId === "714741152271564861") {
-          await interation.deferReply();
-
-          // CHECK SERVER STATE
-          exec("screen -ls || true", (error, stdout, stderr) => {
-            if (error) {
-              console.error(`Error while using screen -ls: ${error}`);
-              interation.editReply(
-                "<:error:1284753947680309318> `Error while checking Minecraft server State.`"
-              );
-              return;
-            }
-
-            const isRunning = stdout.includes("minecraft");
-
-            if (isRunning) {
-              exec(
-                'screen -S minecraft -X stuff "stop\n"',
-                (error, stdout, stderr) => {
-                  if (error) {
-                    console.error(`Fehler: ${error}`);
-                    return interation.editReply({
-                      content:
-                        "<:error:1284753947680309318> `Error stopping Minecraft server.`",
-                      ephemeral: true,
-                    });
-                  }
-                  console.log(`Minecraft server stopped successfully!`);
-                  interation.editReply({
-                    content:
-                      "<:check:1284841812518899815> `Minecraft server stopped successfully!`",
-                  });
-                }
-              );
-            } else {
-              interation.editReply(
-                "<:error:1284753947680309318> `The Server is not running.`"
-              );
-            }
-          });
-          } else {
-            await interation.reply({
-              content:
+          handleServerCommand(interation).catch(console.error);
+        } else {
+          await interation.reply({
+            content:
               "<:error:1284753947680309318> `I dont think you have the permission to do that.`",
             ephemeral: true,
           });

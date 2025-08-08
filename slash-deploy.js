@@ -45,11 +45,17 @@ const slashRegister = async () => {
           .setName("blackjack")
           .setDescription("Play Blackjack with Simpli."),
         new SlashCommandBuilder()
-          .setName("start-mc")
-          .setDescription("Start the Minecraft server."),
-        new SlashCommandBuilder()
-          .setName("stop-mc")
-          .setDescription("Stop the Minecraft server."),
+          .setName("server-toggle")
+          .setDescription("Start or Stop the Minecraft server.")
+          .addStringOption((option) =>
+            option
+              .setName("commands")
+              .setDescription("Additional Commands for the Minecraft server.")
+              .setRequired(false)
+              .addChoices(
+                { name: "StopImmediately", value: "stop" },
+              )
+          ),
       ],
     });
   } catch (error) {
