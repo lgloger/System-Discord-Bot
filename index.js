@@ -64,7 +64,7 @@ client.once("ready", () => {
 
   setInterval(() => {
     checkSales(sendToDiscord).catch(console.error);
-  }, 5 * 60 * 1000);
+  }, 20 * 60 * 1000);
 
   // Send daily Advertaisement
   const adEmbed = new EmbedBuilder()
