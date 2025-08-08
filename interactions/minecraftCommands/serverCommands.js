@@ -4,13 +4,15 @@ export async function handleServerCommand(interation) {
   const commands = interation.options.getString("commands");
 
   if (commands === "stop") {
-    await stopImmediately();
+    await stopImmediately(interation);
   } else {
-    await checkMinecraftServerStatus();
+    await checkMinecraftServerStatus(interation);
   }
 }
 
-async function checkMinecraftServerStatus() {
+async function checkMinecraftServerStatus(interation) {
+  await interation.deferReply();
+
   exec("screen -ls || true", (error, stdout) => {
     if (error) {
       console.error(`Error while using screen -ls: ${error}`);
@@ -61,7 +63,9 @@ async function checkMinecraftServerStatus() {
   });
 }
 
-async function stopImmediately() {
+async function stopImmediately(interation) {
+  await interation.deferReply();
+
   exec('screen -S minecraft -X stuff "stop\n"', (error) => {
     if (error) {
       console.error(`Fehler: ${error}`);
