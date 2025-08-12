@@ -97,7 +97,7 @@ client.once("ready", () => {
 
   cron.schedule(
     "0 16 * * *",
-    () => {
+    async () => {
       const channelId = "1399785684671398049";
       const channel = client.channels.cache.get(channelId);
 
@@ -105,6 +105,10 @@ client.once("ready", () => {
         channel.send({
           embeds: [adEmbed],
         });
+        
+        if (channel.type === Discord.ChannelType.GuildAnnouncement) {
+          await message.crosspost();
+        }
       }
     },
     {
