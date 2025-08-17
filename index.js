@@ -96,6 +96,25 @@ client.once("ready", () => {
     });
 
   cron.schedule(
+    "0 12 * * *",
+    async () => {
+      const channelId = "1399785684671398049";
+      const channel = client.channels.cache.get(channelId);
+
+      if (channel?.isTextBased()) {
+        channel.send({
+          embeds: [adEmbed],
+        });
+
+        await message.crosspost();
+      }
+    },
+    {
+      timezone: "Europe/Berlin",
+    }
+  );
+
+  cron.schedule(
     "0 16 * * *",
     async () => {
       const channelId = "1399785684671398049";
@@ -105,10 +124,8 @@ client.once("ready", () => {
         channel.send({
           embeds: [adEmbed],
         });
-        
-        if (channel.type === Discord.ChannelType.GuildAnnouncement) {
-          await message.crosspost();
-        }
+
+        await message.crosspost();
       }
     },
     {
