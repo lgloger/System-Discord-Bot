@@ -102,7 +102,7 @@ client.once("ready", () => {
       const channel = client.channels.cache.get(channelId);
 
       if (channel?.isTextBased()) {
-        channel.send({
+        const message = await channel.send({
           embeds: [adEmbed],
         });
 
@@ -121,7 +121,7 @@ client.once("ready", () => {
       const channel = client.channels.cache.get(channelId);
 
       if (channel?.isTextBased()) {
-        channel.send({
+        const message = await channel.send({
           embeds: [adEmbed],
         });
 
