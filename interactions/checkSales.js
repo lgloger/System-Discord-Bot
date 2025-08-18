@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import { EmbedBuilder } from "discord.js";
 
-let lastSentSaleId = null;
+let sentSales = new Set();
 
 export async function checkSales(sendToDiscord) {
   const ROBLOSECRUITY = process.env.ROBLOSECURITY;
@@ -24,9 +24,7 @@ export async function checkSales(sendToDiscord) {
 
   await page.goto(
     "https://www.roblox.com/communities/configure?id=15069287#!/revenue/sales",
-    {
-      waitUntil: "networkidle2",
-    }
+    { waitUntil: "networkidle2" }
   );
 
   await page.waitForSelector(".transactions-container");
@@ -62,44 +60,33 @@ export async function checkSales(sendToDiscord) {
   });
 
   if (sales.length > 0) {
-    const latest = sales[0];
+    for (let i = sales.length - 1; i >= 0; i--) {
+      const sale = sales[i];
+      const saleId = `${sale.date}-${sale.user}-${sale.item}-${sale.amount}`;
 
-    const currentSaleId = `${latest.date}-${latest.user}-${latest.item}-${latest.amount}`;
+      if (!sentSales.has(saleId)) {
+        sentSales.add(saleId);
 
-    if (currentSaleId !== lastSentSaleId) {
-      lastSentSaleId = currentSaleId;
+        const msg = new EmbedBuilder()
+          .setColor("#2C2F33")
+          .setTitle(`${sale.item}`)
+          .setURL(`${sale.itemUrl}`)
+          .setAuthor({ name: "New Roblox item sold" })
+          .setThumbnail(sale.userThumbnail)
+          .setDescription(`<@&1324740815154581546>\n`)
+          .addFields(
+            { name: "**Date**", value: `${sale.date.replace("\n", " — ")}`, inline: true },
+            { name: "**Customer**", value: `${sale.user}`, inline: true },
+            { name: "**Revenue**", value: `${sale.amount}`, inline: true }
+          )
+          .setTimestamp()
+          .setFooter({
+            text: `quantum's Utilities`,
+            iconURL: "https://i.imgur.com/jztAYkV.png",
+          });
 
-      const msg = new EmbedBuilder()
-        .setColor("#2C2F33")
-        .setTitle(`${latest.item}`)
-        .setURL(`${latest.itemUrl}`)
-        .setAuthor({ name: "New Roblox item sold" })
-        .setThumbnail(latest.userThumbnail)
-        .setDescription(`<@&1324740815154581546>\n`)
-        .addFields(
-          {
-            name: "**Date**",
-            value: `${latest.date.replace("\n", " — ")}`,
-            inline: true,
-          },
-          {
-            name: "**Customer**",
-            value: `${latest.user}`,
-            inline: true,
-          },
-          {
-            name: "**Revenue**",
-            value: `${latest.amount}`,
-            inline: true,
-          }
-        )
-        .setTimestamp()
-        .setFooter({
-          text: `quantum's Utilities`,
-          iconURL: "https://i.imgur.com/jztAYkV.png",
-        });
-
-      await sendToDiscord(msg);
+        await sendToDiscord(msg);
+      }
     }
   }
 
