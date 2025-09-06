@@ -10,10 +10,8 @@ import {
   ActivityType,
 } from "discord.js";
 dotenv.config();
-import { exec } from "child_process";
 
 // Import Interactions
-import { checkSales } from "./interactions/checkSales.js";
 import { addRole } from "./interactions/addRole.js";
 import { sendHelpEmbed } from "./interactions/helpCommand.js";
 import {
@@ -52,19 +50,6 @@ client.once("ready", () => {
     ],
     status: "online",
   });
-
-  // Check Roblox Sales
-  async function sendToDiscord(msg) {
-    const channel = await client.channels.fetch("1399121444964663378");
-    if (channel)
-      await channel.send({
-        embeds: [msg],
-      });
-  }
-
-  setInterval(() => {
-    checkSales(sendToDiscord).catch(console.error);
-  }, 5 * 60 * 1000);
 
   // Send daily Advertaisement
   const adEmbed = new EmbedBuilder()
