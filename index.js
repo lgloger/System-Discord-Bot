@@ -54,8 +54,8 @@ client.once("ready", () => {
   // Send daily Advertaisement
   const adEmbed = new EmbedBuilder()
     .setColor("#2C2F33")
-    .setTitle(`Quantum`)
-    .setAuthor({ name: "quantum's Utilities" })
+    .setTitle(`Quantum Group`)
+    .setAuthor({ name: "Quantum System"})
     .setDescription(
       `**🌌 Welcome to Quantum – Redefining Roblox Fashion!**\n
 
@@ -76,7 +76,7 @@ client.once("ready", () => {
     .setImage("https://i.imgur.com/jztAYkV.png")
     .setTimestamp()
     .setFooter({
-      text: `quantum's Utilities`,
+      text: `Quantum System`,
       iconURL: "https://i.imgur.com/jztAYkV.png",
     });
 
