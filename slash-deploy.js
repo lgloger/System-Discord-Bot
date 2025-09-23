@@ -20,7 +20,7 @@ const slashRegister = async () => {
           .setDescription("Get a List of all Commands."),
         new SlashCommandBuilder()
           .setName("ask")
-          .setDescription("Ask Simpli something.")
+          .setDescription("Ask Quantum something.")
           .addStringOption((option) => {
             return option
               .setName("prompt")
@@ -43,7 +43,10 @@ const slashRegister = async () => {
           ),
         new SlashCommandBuilder()
           .setName("blackjack")
-          .setDescription("Play Blackjack with Simpli."),
+          .setDescription("Play Blackjack with Quantum."),
+        new SlashCommandBuilder()
+          .setName("tictactoe")
+          .setDescription("Play Tic Tac Toe with Other Users."),
         new SlashCommandBuilder()
           .setName("server-toggle")
           .setDescription("Start or Stop the Minecraft server.")
@@ -52,9 +55,7 @@ const slashRegister = async () => {
               .setName("commands")
               .setDescription("Additional Commands for the Minecraft server.")
               .setRequired(false)
-              .addChoices(
-                { name: "StopImmediately", value: "stop" },
-              )
+              .addChoices({ name: "StopImmediately", value: "stop" })
           ),
       ],
     });

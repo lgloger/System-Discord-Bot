@@ -26,6 +26,8 @@ import {
 } from "./interactions/sendPrefixMessages.js";
 import { handleServerCommand } from "./interactions/minecraftCommands/serverCommands.js";
 
+import { ticTacToe } from "./interactions/gameCommands/ticTacToeGame.js";
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -175,6 +177,7 @@ const cooldownTime = 15 * 1000;
 
 client.on("interactionCreate", async (interation) => {
   const user = interation.user.id;
+  const userData = interation.user;
 
   try {
     if (interation.isCommand()) {
@@ -186,6 +189,13 @@ client.on("interactionCreate", async (interation) => {
       // ========== ASK ==========
       if (interation.commandName === "ask") {
         askAICommand(cooldown, cooldownTime, interation, user).catch(
+          console.error
+        );
+      }
+
+      // ========== TIC TAC TOE ==========
+      if (interation.commandName === "tictactoe") {
+        ticTacToe(interation, userData).catch(
           console.error
         );
       }
