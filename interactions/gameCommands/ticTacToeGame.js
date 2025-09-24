@@ -89,7 +89,7 @@ export async function ticTacToe(interation, user) {
           ? `🎉 \`${creator.username}\` VS \`${opponent.username}\` \n\n ${
               winner === "X" ? creator.username : opponent.username
             } has won!`
-          : "🎲 `${creator.username}` VS `${opponent.username}` \n\n🤝 Draw!";
+          : `🎲 `${creator.username}` VS `${opponent.username}` \n\n🤝 Draw!`;
         return i.update({
           content: endMsg,
           components: renderBoard(board, true),
