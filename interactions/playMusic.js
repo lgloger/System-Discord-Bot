@@ -1,60 +1,58 @@
 import {
   joinVoiceChannel,
+  getVoiceConnection,
   createAudioPlayer,
   createAudioResource,
   AudioPlayerStatus,
 } from "@discordjs/voice";
-const path = require("path");
+import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+let connection;
+let player;
 let isPlaying = false;
 
-export async function playRadio(interation) {
-  if (interation.author.bot) return;
+export async function playRadio(interaction) {
+  if (interaction.user.bot) return;
 
-  const channel = interation.member?.voice?.channel;
+  const channel = interaction.member?.voice?.channel;
+  if (!channel) return interaction.reply("You need to be in a Voice Channel!");
 
-  if (!channel) {
-    interation.reply("You need to be in a Voice Channel!");
-    return;
-  }
-
+  // Stoppen, wenn schon spielt
   if (isPlaying) {
-    const connection = getVoiceConnection(channel.guild.id);
-    if (connection) {
-      connection.destroy();
-    }
-
+    if (connection) connection.destroy();
     isPlaying = false;
-    await interation.reply("Radio stopped!");
-    return;
+    return interaction.reply("Radio stopped!");
   }
 
-  const connection = joinVoiceChannel({
+  // Join
+  connection = joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guild.id,
     adapterCreator: channel.guild.voiceAdapterCreator,
+    selfDeaf: false,
+    selfMute: false,
   });
 
-  const player = createAudioPlayer();
-  const resourcePath = path.join(__dirname, "music", "nonStopPop.mp3");
+  // Audio Player
+  player = createAudioPlayer();
+  const resourcePath = path.join(__dirname, "..", "music", "nonStopPop.mp3");
+  console.log(`Trying to play: ${resourcePath}`);
 
-  function playLoop() {
-    const resource = createAudioResource(resourcePath);
-    player.play(resource);
-  }
+  const resource = createAudioResource(resourcePath);
+  player.play(resource);
 
-  playLoop();
-
+  // Loop
   player.on(AudioPlayerStatus.Idle, () => {
-    playLoop();
+    const loopResource = createAudioResource(resourcePath);
+    player.play(loopResource);
   });
 
   connection.subscribe(player);
   isPlaying = true;
 
-  await interation.reply("Radio started!");
+  return interaction.reply("Radio started!");
 }
