@@ -19,6 +19,7 @@ import {
   createInsultMessage,
 } from "./interactions/smartInsults.js";
 import { askAICommand } from "./interactions/askAICommand.js";
+import { playRadio } from "./interactions/playMusic.js";
 import {
   sendSupportMessage,
   sendRulesMessage,
@@ -35,6 +36,7 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildVoiceStates,
   ],
 });
 
@@ -191,6 +193,11 @@ client.on("interactionCreate", async (interation) => {
         askAICommand(cooldown, cooldownTime, interation, user).catch(
           console.error
         );
+      }
+
+      // ========== RADIO ==========
+      if (interation.commandName === "radio") {
+        playRadio(interation).catch(console.error);
       }
 
       // ========== TIC TAC TOE ==========
