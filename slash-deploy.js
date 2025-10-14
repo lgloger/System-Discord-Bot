@@ -42,6 +42,9 @@ const slashRegister = async () => {
               )
           ),
         new SlashCommandBuilder()
+          .setName("radio")
+          .setDescription("Play The Non Stop Pop Radio in your Voice Channel."),
+        new SlashCommandBuilder()
           .setName("blackjack")
           .setDescription("Play Blackjack with Quantum."),
         new SlashCommandBuilder()
