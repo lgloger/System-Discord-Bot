@@ -29,7 +29,7 @@ export async function playRadio(interation) {
     }
 
     isPlaying = false;
-    await interation.reply("Radio stopped.");
+    await interation.reply("Radio stopped!");
     return;
   }
 
@@ -56,5 +56,5 @@ export async function playRadio(interation) {
   connection.subscribe(player);
   isPlaying = true;
 
-  await interation.reply("Radio started.");
+  await interation.reply("Radio started!");
 }

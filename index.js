@@ -195,7 +195,7 @@ client.on("interactionCreate", async (interation) => {
         );
       }
 
-      // ========== RADIO ==========
+      // ========== PLAY RADIO ==========
       if (interation.commandName === "radio") {
         playRadio(interation).catch(console.error);
       }
