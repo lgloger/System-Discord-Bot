@@ -42,26 +42,3 @@ export async function sendRulesMessage(message) {
     });
   }
 }
-
-// ========== SOCIALS ==========
-export async function sendSocialsMessage(message) {
-  if (message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-    var banner = `https://i.imgur.com/Oa0VNnj.png`;
-    const check = message.guild.emojis.cache.find((e) => e.name === "dc");
-    const roblox = message.guild.emojis.cache.find((e) => e.name === "rb");
-
-    const socialsEmbed = new EmbedBuilder()
-      .setColor("#2C2F33")
-      .setDescription(
-        `### *These are all of Quantum's official social channels. Any socials not listed here are most likely fake.*\n` +
-          `- ${check} https://discord.gg/4qs2eGG9zG\n` +
-          `- ${roblox} https://www.roblox.com/communities/15069287/QU-NTUM#!/about\n\n` +
-          `At the moment, Quantum does not have any accounts on other platforms than the ones above, such as TikTok, Instagram, Snapchat and other social media platforms that weren't listed`
-      );
-
-    await message.channel.send({
-      files: [{ attachment: banner, name: "Banner.png" }],
-      embeds: [socialsEmbed],
-    });
-  }
-}

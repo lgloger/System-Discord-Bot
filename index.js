@@ -12,6 +12,7 @@ import {
 dotenv.config();
 
 // Import Interactions
+import { giveRole } from "./interactions/giveRole.js";
 import { addRole } from "./interactions/addRole.js";
 import { sendHelpEmbed } from "./interactions/helpCommand.js";
 import {
@@ -23,7 +24,6 @@ import { playRadio } from "./interactions/playMusic.js";
 import {
   sendSupportMessage,
   sendRulesMessage,
-  sendSocialsMessage,
 } from "./interactions/sendPrefixMessages.js";
 import { handleServerCommand } from "./interactions/minecraftCommands/serverCommands.js";
 
@@ -59,7 +59,7 @@ client.once("ready", () => {
   const adEmbed = new EmbedBuilder()
     .setColor("#2C2F33")
     .setTitle(`Quantum Group`)
-    .setAuthor({ name: "Quantum System"})
+    .setAuthor({ name: "Quantum System" })
     .setDescription(
       `**🌌 Welcome to Quantum – Redefining Roblox Fashion!**\n
 
@@ -166,10 +166,6 @@ client.on("messageCreate", async (message) => {
   if (message.content === "!rules") {
     sendRulesMessage(message).catch(console.error);
   }
-
-  if (message.content === "!socials") {
-    sendSocialsMessage(message).catch(console.error);
-  }
 });
 
 // ========== INTERACTIONS ==========
@@ -188,6 +184,11 @@ client.on("interactionCreate", async (interation) => {
         sendHelpEmbed(interation).catch(console.error);
       }
 
+      // ========== GIVE ROLE (9999) ==========
+      if (interation.commandName === "9999") {
+        giveRole(interation).catch(console.error);
+      }
+
       // ========== ASK ==========
       if (interation.commandName === "ask") {
         askAICommand(cooldown, cooldownTime, interation, user).catch(
@@ -202,9 +203,7 @@ client.on("interactionCreate", async (interation) => {
 
       // ========== TIC TAC TOE ==========
       if (interation.commandName === "tictactoe") {
-        ticTacToe(interation, userData).catch(
-          console.error
-        );
+        ticTacToe(interation, userData).catch(console.error);
       }
 
       // ========== Blackjack ==========

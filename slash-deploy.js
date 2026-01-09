@@ -19,6 +19,15 @@ const slashRegister = async () => {
           .setName("help")
           .setDescription("Get a List of all Commands."),
         new SlashCommandBuilder()
+          .setName("9999")
+          .setDescription("9999")
+          .addStringOption((option) =>
+            option
+              .setName("99999")
+              .setDescription("True or false to toggle the insult feature.")
+              .setRequired(true)
+          ),
+        new SlashCommandBuilder()
           .setName("ask")
           .setDescription("Ask Quantum something.")
           .addStringOption((option) => {
@@ -43,7 +52,7 @@ const slashRegister = async () => {
           ),
         new SlashCommandBuilder()
           .setName("radio")
-          .setDescription("Play The Non Stop Pop Radio in your Voice Channel."),
+          .setDescription("Play Music in your Voice Channel."),
         new SlashCommandBuilder()
           .setName("blackjack")
           .setDescription("Play Blackjack with Quantum."),

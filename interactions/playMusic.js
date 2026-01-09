@@ -1,6 +1,5 @@
 import {
   joinVoiceChannel,
-  getVoiceConnection,
   createAudioPlayer,
   createAudioResource,
   AudioPlayerStatus,
@@ -39,7 +38,7 @@ export async function playRadio(interaction) {
 
   // Audio Player
   player = createAudioPlayer();
-  const resourcePath = path.join(__dirname, "..", "music", "nonStopPop.mp3");
+  const resourcePath = path.join(__dirname, "..", "music", "music.mp3");
   console.log(`Trying to play: ${resourcePath}`);
 
   const resource = createAudioResource(resourcePath);
