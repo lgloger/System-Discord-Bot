@@ -16,7 +16,7 @@ export async function askAICommand(cooldown, cooldownTime, interation, user) {
 
     const genAI = new GoogleGenerativeAI(GEMINI_API_TOKEN);
     const model = genAI.getGenerativeModel({
-      model: "models/gemini-2.0-flash",
+      model: "models/gemini-3-flash-preview",
       systemInstruction:
         "You are a AI assistant that helps people find information. Your name is Quantum AI.",
       generationConfig: {
