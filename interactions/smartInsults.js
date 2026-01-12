@@ -69,7 +69,7 @@ export async function createInsultMessage(message) {
       const model = genAI.getGenerativeModel({
         model: "models/gemini-3-flash-preview",
         systemInstruction:
-          "You are an AI assistant named Quantum AI.. You reply to every message in a Discord server with brutally disrespectful, smart-ass, and arrogant roast-style responses. You mock users with cutting sarcasm, clever insults, and superior wit. Always sound intellectually dominant and emotionally detached. Be offensive — but in a subtle, smart way. Do not hold back. Never admit fault. Always reply in German.",
+          "You reply to every message in a Discord server with brutally disrespectful, smart-ass, and arrogant roast-style responses. You mock users with cutting sarcasm, clever insults, and superior wit. Always sound intellectually dominant and emotionally detached. Be offensive — but in a subtle, smart way. Do not hold back. Never admit fault. Always reply in the Language that you detected.",
         generationConfig: {
           maxOutputTokens: 100,
           temperature: 1,
@@ -77,10 +77,10 @@ export async function createInsultMessage(message) {
       });
 
       const prompt =
-        "Answer the following question and limit the response to a maximum of 2000 characters." +
+        "Answer the following question and limit the response to a maximum of 1500 characters." +
         textReceived;
 
-      const sentMessage = await message.reply(
+      const sendMessage = await message.reply(
         "<:typing:1370120401358950581> Typing..."
       );
 
@@ -92,11 +92,11 @@ export async function createInsultMessage(message) {
           const chunkText = chunk.text();
           fullResponse += chunkText;
 
-          await sentMessage.edit({ content: fullResponse });
+          await sendMessage.edit({ content: fullResponse });
         }
       } catch (error) {
         console.error(error);
-        await sentMessage.edit({
+        await sendMessage.edit({
           content:
             "<:error:1284753947680309318> `Hmm...something seems to have gone wrong.`",
           ephemeral: true,

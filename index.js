@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import cron from "node-cron";
 import {
   Client,
   GatewayIntentBits,
@@ -54,76 +53,9 @@ client.once("ready", () => {
     ],
     status: "online",
   });
-
-  // Send daily Advertaisement
-  const adEmbed = new EmbedBuilder()
-    .setColor("#2C2F33")
-    .setTitle(`Quantum Group`)
-    .setAuthor({ name: "Quantum System" })
-    .setDescription(
-      `**🌌 Welcome to Quantum – Redefining Roblox Fashion!**\n
-
-      🧵 **Premium Roblox Clothing**\n
-      Stand out with **high-quality and unique outfits** you won’t find anywhere else.\n
-
-      🎨 **Clean & Aesthetic Server Design**\n 
-      Enjoy a **modern, well-structured** layout that makes everything easy to navigate.\n
-
-      🚀 **Active Community & Exclusive Drops**\n
-      Be part of a **growing fashion-focused community** and catch limited-time releases!\n
-
-      ✨ **Quality isn’t just a word – it’s our standard.**\n
-
-      🔗 **Join now:** https://discord.gg/4qs2eGG9zG
-      🎮 **Roblox Group:** https://www.roblox.com/communities/15069287/QU-NTUM#!/about`
-    )
-    .setImage("https://i.imgur.com/jztAYkV.png")
-    .setTimestamp()
-    .setFooter({
-      text: `Quantum System`,
-      iconURL: "https://i.imgur.com/jztAYkV.png",
-    });
-
-  cron.schedule(
-    "0 12 * * *",
-    async () => {
-      const channelId = "1399785684671398049";
-      const channel = client.channels.cache.get(channelId);
-
-      if (channel?.isTextBased()) {
-        const message = await channel.send({
-          embeds: [adEmbed],
-        });
-
-        await message.crosspost();
-      }
-    },
-    {
-      timezone: "Europe/Berlin",
-    }
-  );
-
-  cron.schedule(
-    "0 16 * * *",
-    async () => {
-      const channelId = "1399785684671398049";
-      const channel = client.channels.cache.get(channelId);
-
-      if (channel?.isTextBased()) {
-        const message = await channel.send({
-          embeds: [adEmbed],
-        });
-
-        await message.crosspost();
-      }
-    },
-    {
-      timezone: "Europe/Berlin",
-    }
-  );
 });
 
-// Give new Members a Role
+// Give new Users a Role
 client.on("guildMemberAdd", async (member) => {
   addRole(member).catch(console.error);
 });
